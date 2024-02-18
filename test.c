@@ -5,10 +5,10 @@
 
 
 int main() {
-    const char trainingLabelsPath[] = "train-labels-idx1-ubyte";
-    const char trainingImagesPath[] = "train-images-idx3-ubyte";
-    const char testingLabelsPath[] = "t10k-labels-idx1-ubyte";
-    const char testingImagesPath[] = "t10k-images-idx3-ubyte";
+    const char trainingLabelsPath[] = "dataset/train-labels-idx1-ubyte";
+    const char trainingImagesPath[] = "dataset/train-images-idx3-ubyte";
+    const char testingLabelsPath[] = "dataset/t10k-labels-idx1-ubyte";
+    const char testingImagesPath[] = "dataset/t10k-images-idx3-ubyte";
 
     LabelData trainingLabels;
     ImageData trainingImages;
