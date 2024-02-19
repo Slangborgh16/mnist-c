@@ -1,6 +1,5 @@
 #include "mnist.h"
 
-
 int loadLabels(const char* labelsPath, struct LabelData* labelData) {
     FILE* fd = fopen(labelsPath, "r");
     if (fd == NULL) {
@@ -40,6 +39,7 @@ int loadImages(const char* imagesPath, struct ImageData* imageData) {
     uint32_t numImages;
     uint32_t numRows;
     uint32_t numCols;
+    uint32_t totalPixels;
 
     fread(&magicNumber, sizeof(uint32_t), 1, fd);
     fread(&numImages, sizeof(uint32_t), 1, fd);
@@ -50,6 +50,10 @@ int loadImages(const char* imagesPath, struct ImageData* imageData) {
     imageData->numImages = be32toh(numImages);
     imageData->numRows = be32toh(numRows);
     imageData->numCols = be32toh(numCols);
+    totalPixels = imageData->numImages * imageData->numRows * imageData->numCols;
+    imageData->pixelData = (uint8_t*)malloc(sizeof(uint8_t) * totalPixels);
+
+    fread(imageData->pixelData, sizeof(uint8_t), totalPixels, fd);
 
     if (fclose(fd) == EOF) {
         printf("Error closing file.\nerrno: %d\n", errno);
@@ -57,4 +61,13 @@ int loadImages(const char* imagesPath, struct ImageData* imageData) {
     }
 
     return 0;
+}
+
+uint8_t* readImage(ImageData* imageData, const int index) {
+    if (index >= imageData->numImages || index < 0) return NULL;
+
+    uint32_t numPixels = imageData->numRows * imageData->numCols;
+    uint8_t* imageBuffer = (uint8_t*)malloc(sizeof(uint8_t) * numPixels);
+    uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
+    return memcpy(imageBuffer, pixelDataPtr, numPixels);
 }

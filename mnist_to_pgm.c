@@ -22,16 +22,20 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    uint32_t x = trainingImages.numCols;
-    uint32_t y = trainingImages.numRows;
-    printf("Cols: %u, Rows: %u\n", x, y);
+    uint8_t* image = readImage(&trainingImages, 0);
+
+    uint32_t rows = trainingImages.numRows;
+    uint32_t cols = trainingImages.numCols;
+    printf("Rows: %u, Cols: %u\n", rows, cols);
+
     FILE* fd = fopen(outputFile, "wb");
-    fprintf(fd, "P2\n%u %u\n255\n", x, y);
-    for (uint32_t j = 0; j < y; ++j) {
-        for (uint32_t i = 0; i < x; ++i) {
-            fprintf(fd, "%d ", 128);
-        }
+    fprintf(fd, "P2\n%u %u\n255\n", cols, rows);
+    for (uint32_t i = 0; i < rows * cols; ++i) {
+        fprintf(fd, "%d ", image[i]);
     }
     fclose(fd);
+
+    free(trainingImages.pixelData);
+    free(image);
     exit(EXIT_SUCCESS);
 }
