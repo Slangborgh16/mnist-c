@@ -2,9 +2,10 @@
 #define MATRIX_H
 #include <math.h>
 
-int matrixAdd(int rows, int cols, int a[rows][cols], int b[rows][cols], int output[rows][cols]);
-int dotProduct(int aRows, int aCols, int a[aRows][aCols], \
-        int bRows, int bCols, int b[bRows][bCols], int output[aRows][bCols]);
+int matrixAdd(int rows, int cols, double a[rows][cols], double b[rows][cols], \
+        double output[rows][cols]);
+int dotProduct(int aRows, int aCols, double a[aRows][aCols], \
+        int bRows, int bCols, double b[bRows][bCols], double output[aRows][bCols]);
 int relu(int rows, double input[rows], double output[rows]);
 int softmax(int rows, double input[rows], double output[rows]);
 
