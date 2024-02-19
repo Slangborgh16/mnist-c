@@ -11,6 +11,17 @@ int matrixAdd(int rows, int cols, double a[rows][cols], double b[rows][cols], \
 }
 
 
+int matrixSubtract(int rows, int cols, double a[rows][cols], double b[rows][cols], \
+        double output[rows][cols]) {
+    for (int m = 0; m < rows; m++) {
+        for (int n = 0; n < rows; n++) {
+            output[m][n] = a[m][n] - b[m][n];
+        }
+    }
+    return 0;
+}
+
+
 int dotProduct(int aRows, int aCols, double a[aRows][aCols], int bRows, \
         int bCols, double b[bRows][bCols], double output[aRows][bCols]) {
     if (aCols != bRows) return -1;
