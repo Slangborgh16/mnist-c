@@ -22,6 +22,14 @@ int matrixSubtract(int rows, int cols, double a[rows][cols], double b[rows][cols
 }
 
 
+int matrixNormalize(int rows, double input[rows], double output[rows], double maximum) {
+    for (int i = 0; i < rows; i++) {
+        output[i] = input[i] / maximum;
+    }
+    return 0;
+}
+
+
 int dotProduct(int aRows, int aCols, double a[aRows][aCols], int bRows, \
         int bCols, double b[bRows][bCols], double output[aRows][bCols]) {
     if (aCols != bRows) return -1;
