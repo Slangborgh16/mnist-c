@@ -63,10 +63,20 @@ int loadImages(const char* imagesPath, struct ImageData* imageData) {
     return 0;
 }
 
+
 uint8_t* readImage(ImageData* imageData, const int index) {
     if (index >= imageData->numImages || index < 0) return NULL;
 
     uint32_t numPixels = imageData->numRows * imageData->numCols;
     uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
     return pixelDataPtr;
+}
+
+
+int oneHotEncode(LabelData* labelData, const int index, double output[10]) {
+    int label = labelData->labels + sizeof(uint8_t) * index;    
+    for (int i = 0; i < 10; i++)
+        output[i] = 0.00;
+    output[label] = 1;
+    return 0;
 }
