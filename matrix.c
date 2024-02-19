@@ -6,6 +6,7 @@ int matrixAdd(int rows, int cols, int a[rows][cols], int b[rows][cols], int outp
             output[m][n] = a[m][n] + b[m][n];
         }
     }
+    return 0;
 }
 
 
@@ -22,5 +23,30 @@ int dotProduct(int aRows, int aCols, int a[aRows][aCols], int bRows, \
             output[m][n] = productSum;
         }
     }
+    return 0;
+}
+
+
+
+int relu(int rows, double input[rows], double output[rows]) {
+    for (int i = 0; i < rows; i++)
+        output[i] = fmax(0.00f, input[i]);
+
+    return 0;
+}
+
+
+int softmax(int rows, double input[rows], double output[rows]) {
+    double summation = 0.00f;
+    for (int i = 0; i < rows; i++) {
+        double val = powf(M_E, input[i]);
+        summation += val;
+        output[i] = val;
+    }
+
+    for (int i = 0; i < rows; i++) {
+        output[i] /= summation;
+    }
+
     return 0;
 }
