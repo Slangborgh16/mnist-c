@@ -67,7 +67,6 @@ uint8_t* readImage(ImageData* imageData, const int index) {
     if (index >= imageData->numImages || index < 0) return NULL;
 
     uint32_t numPixels = imageData->numRows * imageData->numCols;
-    uint8_t* imageBuffer = (uint8_t*)malloc(sizeof(uint8_t) * numPixels);
     uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
-    return memcpy(imageBuffer, pixelDataPtr, numPixels);
+    return pixelDataPtr;
 }

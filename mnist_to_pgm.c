@@ -36,6 +36,5 @@ int main() {
     fclose(fd);
 
     free(trainingImages.pixelData);
-    free(image);
     exit(EXIT_SUCCESS);
 }
