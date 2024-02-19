@@ -74,7 +74,7 @@ uint8_t* readImage(ImageData* imageData, const int index) {
 
 
 int oneHotEncode(LabelData* labelData, const int index, double output[10]) {
-    int label = labelData->labels + sizeof(uint8_t) * index;    
+    int label = *(labelData->labels + sizeof(uint8_t) * index);    
     for (int i = 0; i < 10; i++)
         output[i] = 0.00;
     output[label] = 1;
