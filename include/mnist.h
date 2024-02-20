@@ -25,6 +25,7 @@ typedef struct ImageData {
 int loadLabels(const char* labelsPath, LabelData* labelData);
 int loadImages(const char* imagesPath, ImageData* imageData);
 uint8_t* readImage(ImageData* imageData, const int index);
+int pgmExport(ImageData* imageData, const int index, const char* outputPath);
 int oneHotEncode(LabelData* labelData, const int index, double output[10]);
 
 #endif
