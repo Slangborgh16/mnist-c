@@ -13,7 +13,7 @@ int main() {
     ImageData trainingImages;
 
     if (loadLabels(trainingLabelsPath, &trainingLabels) == -1) {
-        printf("Error reading training labels\n");
+        printf("Error reading labels\n");
         exit(EXIT_FAILURE);
     }
 
@@ -22,6 +22,18 @@ int main() {
         printf("Error loading images\n");
         exit(EXIT_FAILURE);
     }
+
+    uint32_t rows = trainingImages.rows;
+    uint32_t cols = trainingImages.cols;
+    uint32_t numPixels = rows * cols;
+
+    double inputLayer[numPixels];
+    double weightsI_H[20][numPixels];
+    double biasI_H[20];
+    double hiddenLayer[20];
+    double weightsH_O[10][20];
+    double biasH_O[10];
+    double outputLayer[10];
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
