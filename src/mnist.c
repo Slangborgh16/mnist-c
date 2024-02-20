@@ -74,14 +74,14 @@ uint8_t* readImage(ImageData* imageData, const int index) {
 
 
 int pgmExport(ImageData* imageData, const int index, const char* outputPath) {
-    uint8_t* image = readImage(&imageData, index);
+    uint8_t* image = readImage(imageData, index);
     if (image == NULL) {
-        printf("Index %d out of range. Max value: %d\n", index, imageData.numImages - 1);
+        printf("Index %d out of range. Max value: %d\n", index, imageData->numImages - 1);
         return -1;
     }
 
-    uint32_t rows = imageData.numRows;
-    uint32_t cols = imageData.numCols;
+    uint32_t rows = imageData->numRows;
+    uint32_t cols = imageData->numCols;
     uint32_t numPixels = rows * cols;
 
     FILE* fd = fopen(outputPath, "wb");
