@@ -23,8 +23,8 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    uint32_t rows = trainingImages.rows;
-    uint32_t cols = trainingImages.cols;
+    uint32_t rows = trainingImages.numRows;
+    uint32_t cols = trainingImages.numCols;
     uint32_t numPixels = rows * cols;
 
     double inputLayer[numPixels];
