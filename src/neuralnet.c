@@ -1,22 +1,16 @@
 #include "neuralnet.h"
 
-int matrixAdd(int rows, int cols, double a[rows][cols], double b[rows][cols], \
-        double output[rows][cols]) {
-    for (int m = 0; m < rows; m++) {
-        for (int n = 0; n < rows; n++) {
-            output[m][n] = a[m][n] + b[m][n];
-        }
+int vecAdd(int cols, double a[cols], double b[cols], double output[cols]) {
+    for (int i = 0; i < cols; i++) {
+        output[i] = a[i] + b[i];
     }
     return 0;
 }
 
 
-int matrixSubtract(int rows, int cols, double a[rows][cols], double b[rows][cols], \
-        double output[rows][cols]) {
-    for (int m = 0; m < rows; m++) {
-        for (int n = 0; n < rows; n++) {
-            output[m][n] = a[m][n] - b[m][n];
-        }
+int vecSubtract(int cols, double a[cols], double b[cols], double output[cols]) {
+    for (int i = 0; i < cols; i++) {
+        output[i] = a[i] - b[i];
     }
     return 0;
 }
@@ -40,18 +34,14 @@ int initializeWeights(int rows, int cols, double input[rows][cols]) {
 }
 
 
-int dotProduct(int aRows, int aCols, double a[aRows][aCols], int bRows, \
-        int bCols, double b[bRows][bCols], double output[aRows][bCols]) {
-    if (aCols != bRows) return -1;
-
-    for (int m = 0; m < aRows; m++) {
-        for (int n = 0; n < bCols; n++){
-            double productSum = 0;
-            for (int i = 0; i < bRows; i++) {
-                productSum += a[m][i] * b[i][n];
-            }
-            output[m][n] = productSum;
+int dotProduct(int rows, int cols, double matrix[rows][cols], \
+        double vec[cols], double output[rows]) {
+    for (int m = 0; m < rows; m++) {
+        double productSum = 0;
+        for (int n = 0; n < cols; n++){
+            productSum += matrix[m][n] * vec[n];
         }
+        output[m] = productSum;
     }
     return 0;
 }
@@ -78,5 +68,12 @@ int softmax(int rows, double input[rows], double output[rows]) {
         output[i] /= summation;
     }
 
+    return 0;
+}
+
+int forwardprop(int rows, int cols, double weights[rows][cols], double vec[cols], \
+        double bias[rows], double output[rows]) {
+    dotProduct(rows, cols, weights, vec, output);
+    vecAdd(cols, output, bias, output);
     return 0;
 }

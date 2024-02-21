@@ -3,15 +3,14 @@
 #include <stdlib.h>
 #include <math.h>
 
-int matrixAdd(int rows, int cols, double a[rows][cols], double b[rows][cols], \
-        double output[rows][cols]);
-int matrixSubtract(int rows, int cols, double a[rows][cols], double b[rows][cols], \
-        double output[rows][cols]);
+int vecAdd(int cols, double a[cols], double b[cols], double output[cols]);
+int vecSubtract(int cols, double a[cols], double b[cols], double output[cols]);
 int matrixNormalize(int rows, double input[rows], double output[rows], double maximum);
 int initializeWeights(int rows, int cols, double input[rows][cols]);
-int dotProduct(int aRows, int aCols, double a[aRows][aCols], \
-        int bRows, int bCols, double b[bRows][bCols], double output[aRows][bCols]);
+int dotProduct(int rows, int cols, double matrix[rows][cols], double vec[cols], double output[rows]);
 int relu(int rows, double input[rows], double output[rows]);
 int softmax(int rows, double input[rows], double output[rows]);
+int forwardprop(int rows, int cols, double weights[rows][cols], double vec[cols], \
+        double bias[rows], double output[rows]);
 
 #endif
