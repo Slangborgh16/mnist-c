@@ -1,5 +1,5 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef NEURALNET_H
+#define NEURALNET_H
 #include <stdlib.h>
 #include <math.h>
 

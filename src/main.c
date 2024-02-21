@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "mnist.h"
-#include "matrix.h"
+#include "neuralnet.h"
 
 #define HIDDEN_NODES 20
 #define OUTPUT_NODES 10

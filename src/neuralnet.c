@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "neuralnet.h"
 
 int matrixAdd(int rows, int cols, double a[rows][cols], double b[rows][cols], \
         double output[rows][cols]) {
