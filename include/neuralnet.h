@@ -1,6 +1,7 @@
 #ifndef NEURALNET_H
 #define NEURALNET_H
 #include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 
 typedef struct Network {
@@ -21,7 +22,7 @@ typedef struct Network {
 
 int vecAdd(int cols, double* a, double* b, double* output);
 int vecSubtract(int cols, double* a, double* b, double* output);
-int vecNormalize(int cols, double* input, double* output, double maximum);
+int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum);
 double** initializeWeights(int rows, int cols);
 void freeWeights(int rows, int cols, double** weights);
 int dotProduct(int rows, int cols, double** matrix, double* vec, double* output);

@@ -51,6 +51,7 @@ int main() {
 
 
     // Test to see if weights initialized correctly
+    /*
     printf("Input-Hidden Weights\n");
     for (int m = 0; m < HIDDEN_NODES; m++) {
         for (int n = 0; n < numPixels; n++) {
@@ -66,6 +67,22 @@ int main() {
         }
         printf("\n");
     }
+    */
+    
+    double inputLabel[10];
+    int label = oneHotEncode(&trainingLabels, 0, inputLabel);
+    printf("Input: %d\n[", label);
+    for (int i = 0; i < 10; i++)
+        printf("%d ", (int)inputLabel[i]);
+    printf("]\n");
+    
+    uint8_t* inputImage = readImage(&trainingImages, 0);
+    vecNormalize(nnet.inputNodes, inputImage, nnet.inputLayer, 255);
+    forwardprop(&nnet);
+    printf("\nOutput:\n[");
+    for (int i = 0; i < 10; i++)
+        printf("%.4f ", nnet.outputLayer[i]);
+    printf("]\n");
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);

@@ -109,5 +109,5 @@ int oneHotEncode(LabelData* labelData, const int index, double output[10]) {
     for (int i = 0; i < 10; i++)
         output[i] = 0.00;
     output[label] = 1;
-    return 0;
+    return label;
 }
