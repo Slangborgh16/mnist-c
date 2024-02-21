@@ -30,6 +30,16 @@ int matrixNormalize(int rows, double input[rows], double output[rows], double ma
 }
 
 
+int initializeWeights(int rows, int cols, double input[rows][cols]) {
+    for (int m = 0; m < rows; m++) {
+        for (int n = 0; n < cols; n++) {
+            input[m][n] = (double)rand() / RAND_MAX - 0.5;
+        }
+    }
+    return 0;
+}
+
+
 int dotProduct(int aRows, int aCols, double a[aRows][aCols], int bRows, \
         int bCols, double b[bRows][bCols], double output[aRows][bCols]) {
     if (aCols != bRows) return -1;
