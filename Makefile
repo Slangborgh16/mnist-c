@@ -6,7 +6,6 @@ BIN_DIR := .
 
 EXE := $(BIN_DIR)/mnistc
 SRC := $(wildcard $(SRC_DIR)/*.c)
-SRC := $(filter-out $(SRC_DIR)/mnist_to_pgm.c, $(SRC))
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS := -Iinclude -MMD -MP
