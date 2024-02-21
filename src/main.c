@@ -32,25 +32,51 @@ int main() {
     uint32_t cols = trainingImages.numCols;
     uint32_t numPixels = rows * cols;
 
-    double inputLayer[numPixels];
-    double weightsI_H[HIDDEN_NODES][numPixels];
-    double biasI_H[HIDDEN_NODES] = {0};
-    double hiddenLayer[HIDDEN_NODES];
-    double weightsH_O[HIDDEN_NODES][OUTPUT_NODES];
-    double biasH_O[OUTPUT_NODES] = {0};
-    double outputLayer[OUTPUT_NODES];
+    Network nnet;
+    nnet.inputNodes = numPixels;
+    nnet.hiddenNodes = HIDDEN_NODES;
+    nnet.outputNodes = OUTPUT_NODES;
 
-    initializeWeights(HIDDEN_NODES, numPixels, weightsI_H);
-    initializeWeights(OUTPUT_NODES, HIDDEN_NODES, weightsH_O);
+    nnet.inputLayer = (double*)malloc(sizeof(double) * numPixels);
+    nnet.hiddenLayer = (double*)malloc(sizeof(double) * HIDDEN_NODES);
+    nnet.outputLayer  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+
+    nnet.weights1 = initializeWeights(HIDDEN_NODES, numPixels);
+    nnet.weights2 = initializeWeights(OUTPUT_NODES, HIDDEN_NODES);
+
+    nnet.bias1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
+    nnet.bias2 = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+    memset(nnet.bias1, 0, sizeof(double) * HIDDEN_NODES);
+    memset(nnet.bias2, 0, sizeof(double) * OUTPUT_NODES);
+
 
     // Test to see if weights initialized correctly
+    printf("Input-Hidden Weights\n");
     for (int m = 0; m < HIDDEN_NODES; m++) {
-        for (int n = 0; n < OUTPUT_NODES; n++) {
-            printf("%.3f ", weightsH_O[m][n]);
+        for (int n = 0; n < numPixels; n++) {
+            printf("%.3f ", nnet.weights1[m][n]);
         }
         printf("\n");
     }
+
+    printf("\nHidden-Output Weights\n");
+    for (int m = 0; m < OUTPUT_NODES; m++) {
+        for (int n = 0; n < HIDDEN_NODES; n++) {
+            printf("%.3f ", nnet.weights2[m][n]);
+        }
+        printf("\n");
+    }
+
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
+
+    free(nnet.inputLayer);
+    free(nnet.hiddenLayer);
+    free(nnet.outputLayer);
+    free(nnet.bias1);
+    free(nnet.bias2);
+    freeWeights(HIDDEN_NODES, numPixels, nnet.weights1);
+    freeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.weights2);
+
     exit(EXIT_SUCCESS);
 }

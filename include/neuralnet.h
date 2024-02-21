@@ -8,24 +8,25 @@ typedef struct Network {
     int hiddenNodes;
     int outputNodes;
 
-    double inputLayer[inputNodes];
-    double hiddenLayer[hiddenNodes];
-    double outputLayer[outputNodes];
+    double* inputLayer;
+    double* hiddenLayer;
+    double* outputLayer;
 
-    double weights1[hiddenNodes][inputNodes];
-    double weights2[outputNodes][hiddenNodes];
+    double** weights1;
+    double** weights2;
 
-    double bias1[hiddenNodes];
-    double bias2[outputNodes];
+    double* bias1;
+    double* bias2;
 } Network;
 
-int vecAdd(int cols, double a[cols], double b[cols], double output[cols]);
-int vecSubtract(int cols, double a[cols], double b[cols], double output[cols]);
-int vecNormalize(int cols, double input[cols], double output[cols], double maximum);
-int initializeWeights(int rows, int cols, double input[rows][cols]);
-int dotProduct(int rows, int cols, double matrix[rows][cols], double vec[cols], double output[rows]);
+int vecAdd(int cols, double* a, double* b, double* output);
+int vecSubtract(int cols, double* a, double* b, double* output);
+int vecNormalize(int cols, double* input, double* output, double maximum);
+double** initializeWeights(int rows, int cols);
+void freeWeights(int rows, int cols, double** weights);
+int dotProduct(int rows, int cols, double** matrix, double* vec, double* output);
 int relu(int cols, double input[cols], double output[cols]);
 int softmax(int cols, double input[cols], double output[cols]);
-int forwardprop(Network* nnet) {
+int forwardprop(Network* nnet);
 
 #endif

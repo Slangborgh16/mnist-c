@@ -1,6 +1,6 @@
 #include "neuralnet.h"
 
-int vecAdd(int cols, double a[cols], double b[cols], double output[cols]) {
+int vecAdd(int cols, double* a, double* b, double* output) {
     for (int i = 0; i < cols; i++) {
         output[i] = a[i] + b[i];
     }
@@ -8,7 +8,7 @@ int vecAdd(int cols, double a[cols], double b[cols], double output[cols]) {
 }
 
 
-int vecSubtract(int cols, double a[cols], double b[cols], double output[cols]) {
+int vecSubtract(int cols, double* a, double* b, double* output) {
     for (int i = 0; i < cols; i++) {
         output[i] = a[i] - b[i];
     }
@@ -16,7 +16,7 @@ int vecSubtract(int cols, double a[cols], double b[cols], double output[cols]) {
 }
 
 
-int vecNormalize(int cols, double input[cols], double output[cols], double maximum) {
+int vecNormalize(int cols, double* input, double* output, double maximum) {
     for (int i = 0; i < cols; i++) {
         output[i] = input[i] / maximum;
     }
@@ -24,18 +24,25 @@ int vecNormalize(int cols, double input[cols], double output[cols], double maxim
 }
 
 
-int initializeWeights(int rows, int cols, double input[rows][cols]) {
-    for (int m = 0; m < rows; m++) {
-        for (int n = 0; n < cols; n++) {
-            input[m][n] = (double)rand() / RAND_MAX - 0.5;
-        }
+double** initializeWeights(int rows, int cols) {
+    double** weights = (double**)malloc(sizeof(double*) * rows);
+    for (int i = 0; i < rows; i++) {
+        weights[i] = (double*)malloc(sizeof(double) * cols);
+        for (int j = 0; j < cols; j++)
+            weights[i][j] = (double)rand() / RAND_MAX - 0.5;
     }
-    return 0;
+
+    return weights;
 }
 
 
-int dotProduct(int rows, int cols, double matrix[rows][cols], \
-        double vec[cols], double output[rows]) {
+void freeWeights(int rows, int cols, double** weights) {
+    for (int i = 0; i < rows; i++)
+        free(weights[i]);
+    free(weights);
+}
+
+int dotProduct(int rows, int cols, double** matrix, double* vec, double* output) {
     for (int m = 0; m < rows; m++) {
         double productSum = 0;
         for (int n = 0; n < cols; n++){
@@ -80,15 +87,15 @@ int forwardprop(Network* nnet) {
     double* hLayer = nnet->hiddenLayer;
     double* oLayer = nnet->outputLayer;
 
-    double* w1 = nnet->weights1;
-    double* w2 = nnet->weights2;
+    double** w1 = nnet->weights1;
+    double** w2 = nnet->weights2;
 
     double* b1 = nnet->bias1;
     double* b2 = nnet->bias2;
 
     dotProduct(hNodes, iNodes, w1, iLayer, hLayer);
     vecAdd(hNodes, hLayer, b1, hLayer);
-    reul(hNodes, hLayer, hLayer);
+    relu(hNodes, hLayer, hLayer);
     dotProduct(oNodes, hNodes, w2, hLayer, oLayer);
     vecAdd(oNodes, oLayer, b2, oLayer);
     softmax(oNodes, oLayer, oLayer);
