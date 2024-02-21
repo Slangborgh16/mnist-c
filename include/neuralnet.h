@@ -29,7 +29,7 @@ void freeWeights(int rows, int cols, double** weights);
 int dotProduct(int rows, int cols, double** matrix, double* vec, double* output);
 int relu(int cols, double input[cols], double output[cols]);
 int softmax(int cols, double input[cols], double output[cols]);
-int crossEntropy(int classes, double* label, double* prediction, double* output);
+double crossEntropy(int classes, double* label, double* prediction);
 int forwardprop(Network* nnet);
 
 #endif

@@ -78,16 +78,12 @@ int softmax(int cols, double input[cols], double output[cols]) {
 }
 
 
-int crossEntropy(int classes, double* label, double* prediction, double* output) {
+double crossEntropy(int classes, double* label, double* prediction) {
     int classId = 0;
     while (label[classId] == 0)
         classId++;
     
-    for (int i = 0; i < classes; i++) {
-        output[i] = 0;
-    }
-    output[classId] = -log(prediction[classId]);
-    return 0;
+    return -log(prediction[classId]);
 }
 
 
