@@ -16,9 +16,9 @@ int vecSubtract(int cols, double* a, double* b, double* output) {
 }
 
 
-int vecNormalize(int cols, double* input, double* output, double maximum) {
+int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
     for (int i = 0; i < cols; i++) {
-        output[i] = input[i] / maximum;
+        output[i] = (double)input[i] / maximum;
     }
     return 0;
 }
