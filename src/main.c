@@ -71,7 +71,7 @@ int main() {
     
     double inputLabel[10];
     int label = oneHotEncode(&trainingLabels, 0, inputLabel);
-    printf("Input: %d\n[", label);
+    printf("Input: %d\n[ ", label);
     for (int i = 0; i < 10; i++)
         printf("%d ", (int)inputLabel[i]);
     printf("]\n");
@@ -79,7 +79,7 @@ int main() {
     uint8_t* inputImage = readImage(&trainingImages, 0);
     vecNormalize(nnet.inputNodes, inputImage, nnet.inputLayer, 255);
     forwardprop(&nnet);
-    printf("\nOutput:\n[");
+    printf("\nOutput:\n[ ");
     for (int i = 0; i < 10; i++)
         printf("%.4f ", nnet.outputLayer[i]);
     printf("]\n");
