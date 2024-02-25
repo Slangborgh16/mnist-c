@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <time.h>
 
 typedef struct Network {
     int inputNodes;
@@ -24,9 +25,12 @@ typedef struct Network {
 int vecAdd(int cols, double* a, double* b, double* output);
 int vecSubtract(int cols, double* a, double* b, double* output);
 int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum);
+
 double** initializeWeights(int rows, int cols);
 void freeWeights(int rows, int cols, double** weights);
+
 int dotProduct(int rows, int cols, double** matrix, double* vec, double* output);
+
 int relu(int cols, double input[cols], double output[cols]);
 int softmax(int cols, double input[cols], double output[cols]);
 double crossEntropy(int classes, double* label, double* prediction);

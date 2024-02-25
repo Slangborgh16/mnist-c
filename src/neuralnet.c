@@ -25,6 +25,8 @@ int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
 
 
 double** initializeWeights(int rows, int cols) {
+    srand(time(NULL));
+
     double** weights = (double**)malloc(sizeof(double*) * rows);
     for (int i = 0; i < rows; i++) {
         weights[i] = (double*)malloc(sizeof(double) * cols);

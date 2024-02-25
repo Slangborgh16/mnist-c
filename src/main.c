@@ -8,6 +8,8 @@
 #define HIDDEN_NODES 20
 #define OUTPUT_NODES 10
 
+void shuffleArray(int arr[], int size);
+
 int main() {
     srand(time(NULL));
 
@@ -96,4 +98,18 @@ int main() {
     freeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.weights2);
 
     exit(EXIT_SUCCESS);
+}
+
+
+void shuffleArray(int arr[], int size) {
+    // Fisher-Yates shuffle
+    srand(time(NULL));
+    
+    for (int i = size - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+
+        int tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
 }
