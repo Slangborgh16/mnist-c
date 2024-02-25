@@ -65,7 +65,7 @@ int relu(int cols, double input[cols], double output[cols]) {
 int softmax(int cols, double input[cols], double output[cols]) {
     double summation = 0.00f;
     for (int i = 0; i < cols; i++) {
-        double val = powf(M_E, input[i]);
+        double val = exp(input[i]);
         summation += val;
         output[i] = val;
     }
