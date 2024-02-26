@@ -1,26 +1,23 @@
 #include "neuralnet.h"
 
-int vecAdd(int cols, double* a, double* b, double* output) {
+void vecAdd(int cols, double* a, double* b, double* output) {
     for (int i = 0; i < cols; i++) {
         output[i] = a[i] + b[i];
     }
-    return 0;
 }
 
 
-int vecSubtract(int cols, double* a, double* b, double* output) {
+void vecSubtract(int cols, double* a, double* b, double* output) {
     for (int i = 0; i < cols; i++) {
         output[i] = a[i] - b[i];
     }
-    return 0;
 }
 
 
-int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
+void vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
     for (int i = 0; i < cols; i++) {
         output[i] = (double)input[i] / maximum;
     }
-    return 0;
 }
 
 
@@ -44,7 +41,7 @@ void freeWeights(int rows, int cols, double** weights) {
     free(weights);
 }
 
-int matDotVec(int rows, int cols, double** matrix, double* vec, double* output) {
+void matDotVec(int rows, int cols, double** matrix, double* vec, double* output) {
     for (int m = 0; m < rows; m++) {
         double productSum = 0;
         for (int n = 0; n < cols; n++){
@@ -52,14 +49,11 @@ int matDotVec(int rows, int cols, double** matrix, double* vec, double* output) 
         }
         output[m] = productSum;
     }
-    return 0;
 }
 
 
-int dotProduct(int rows1, int cols1, int rows2, int cols2, \
+void dotProduct(int rows1, int cols1, int rows2, int cols2, \
         double** mat1, double** mat2, double** output) {
-    if (cols1 != rows2) return -1;
-
     for (int i = 0; i < rows1; i++) {
         for (int j = 0; j < cols2; j++) {
             double productSum = 0;
@@ -69,37 +63,31 @@ int dotProduct(int rows1, int cols1, int rows2, int cols2, \
             output[i][j] = productSum;
         }
     }
-
-    return 0;
 }
 
 
-int matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output) {
+void matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output) {
     for (int i = 0; i < rows1; i++) {
         for (int j = 0; j < cols2; j++) {
             output[j][i] = matrix[i][j];
         }
     }
-    return 0;
 }
 
 
-int relu(int cols, double input[cols], double output[cols]) {
+void relu(int cols, double input[cols], double output[cols]) {
     for (int i = 0; i < cols; i++)
         output[i] = fmax(0.00f, input[i]);
-
-    return 0;
 }
 
 
-int dRelu(int cols, double input[cols], double output[cols]) {
+void dRelu(int cols, double input[cols], double output[cols]) {
     for (int i = 0; i < cols; i++)
         output[i] = input[i] > 0;
-    return 0;
 }
 
 
-int softmax(int cols, double input[cols], double output[cols]) {
+void softmax(int cols, double input[cols], double output[cols]) {
     double summation = 0.00f;
     for (int i = 0; i < cols; i++) {
         double val = exp(input[i]);
@@ -110,8 +98,6 @@ int softmax(int cols, double input[cols], double output[cols]) {
     for (int i = 0; i < cols; i++) {
         output[i] /= summation;
     }
-
-    return 0;
 }
 
 
@@ -124,7 +110,7 @@ double crossEntropy(int classes, double* label, double* prediction) {
 }
 
 
-int forwardprop(Network* nnet) {
+void forwardprop(Network* nnet) {
     int iNodes = nnet->inputNodes;
     int hNodes = nnet->hiddenNodes;
     int oNodes = nnet->outputNodes;
@@ -145,6 +131,4 @@ int forwardprop(Network* nnet) {
     matDotVec(oNodes, hNodes, w2, hLayer, oLayer);
     vecAdd(oNodes, oLayer, b2, oLayer);
     softmax(oNodes, oLayer, oLayer);
-
-    return 0;
 }
