@@ -44,7 +44,7 @@ void freeWeights(int rows, int cols, double** weights) {
     free(weights);
 }
 
-int dotProduct(int rows, int cols, double** matrix, double* vec, double* output) {
+int matDotVec(int rows, int cols, double** matrix, double* vec, double* output) {
     for (int m = 0; m < rows; m++) {
         double productSum = 0;
         for (int n = 0; n < cols; n++){
@@ -56,10 +56,45 @@ int dotProduct(int rows, int cols, double** matrix, double* vec, double* output)
 }
 
 
+int dotProduct(int rows1, int cols1, int rows2, int cols2, \
+        double** mat1, double** mat2, double** output) {
+    if (cols1 != rows2) return -1;
+
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            double productSum = 0;
+            for (int k = 0; k < rows2; k++) {
+                productSum += mat1[i][k] * mat2[k][j];
+            }
+            output[i][j] = productSum;
+        }
+    }
+
+    return 0;
+}
+
+
+int matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output) {
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            output[j][i] = matrix[i][j];
+        }
+    }
+    return 0;
+}
+
+
 int relu(int cols, double input[cols], double output[cols]) {
     for (int i = 0; i < cols; i++)
         output[i] = fmax(0.00f, input[i]);
 
+    return 0;
+}
+
+
+int dRelu(int cols, double input[cols], double output[cols]) {
+    for (int i = 0; i < cols; i++)
+        output[i] = input[i] > 0;
     return 0;
 }
 
@@ -104,10 +139,10 @@ int forwardprop(Network* nnet) {
     double* b1 = nnet->bias1;
     double* b2 = nnet->bias2;
 
-    dotProduct(hNodes, iNodes, w1, iLayer, hLayer);
+    matDotVec(hNodes, iNodes, w1, iLayer, hLayer);
     vecAdd(hNodes, hLayer, b1, hLayer);
     relu(hNodes, hLayer, hLayer);
-    dotProduct(oNodes, hNodes, w2, hLayer, oLayer);
+    matDotVec(oNodes, hNodes, w2, hLayer, oLayer);
     vecAdd(oNodes, oLayer, b2, oLayer);
     softmax(oNodes, oLayer, oLayer);
 

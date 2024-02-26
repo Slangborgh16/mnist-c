@@ -29,9 +29,13 @@ int vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum);
 double** initializeWeights(int rows, int cols);
 void freeWeights(int rows, int cols, double** weights);
 
-int dotProduct(int rows, int cols, double** matrix, double* vec, double* output);
+int matDotVec(int rows, int cols, double** matrix, double* vec, double* output);
+int dotProduct(int rows1, int cols1, int rows2, int cols2, \
+        double** mat1, double** mat2, double** output);
+int matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output);
 
 int relu(int cols, double input[cols], double output[cols]);
+int dRelu(int cols, double input[cols], double output[cols]);
 int softmax(int cols, double input[cols], double output[cols]);
 double crossEntropy(int classes, double* label, double* prediction);
 int forwardprop(Network* nnet);

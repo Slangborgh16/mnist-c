@@ -7,6 +7,7 @@
 
 #define HIDDEN_NODES 20
 #define OUTPUT_NODES 10
+#define BATCH_SIZE 10
 
 void shuffleArray(int arr[], int size);
 
@@ -30,6 +31,10 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    int imageIndices[trainingImages.numImages];
+    for (int i = 0; i < trainingImages.numImages; i++)
+        imageIndices[i] = i;
+
     uint32_t rows = trainingImages.numRows;
     uint32_t cols = trainingImages.numCols;
     uint32_t numPixels = rows * cols;
@@ -50,35 +55,19 @@ int main() {
     nnet.bias2 = (double*)malloc(sizeof(double) * OUTPUT_NODES);
     memset(nnet.bias1, 0, sizeof(double) * HIDDEN_NODES);
     memset(nnet.bias2, 0, sizeof(double) * OUTPUT_NODES);
-
-
-    // Test to see if weights initialized correctly
-    /*
-    printf("Input-Hidden Weights\n");
-    for (int m = 0; m < HIDDEN_NODES; m++) {
-        for (int n = 0; n < numPixels; n++) {
-            printf("%.3f ", nnet.weights1[m][n]);
-        }
-        printf("\n");
-    }
-
-    printf("\nHidden-Output Weights\n");
-    for (int m = 0; m < OUTPUT_NODES; m++) {
-        for (int n = 0; n < HIDDEN_NODES; n++) {
-            printf("%.3f ", nnet.weights2[m][n]);
-        }
-        printf("\n");
-    }
-    */
     
+    
+    shuffleArray(imageIndices, trainingImages.numImages);
+    printf("Image ID: %d\n", imageIndices[0]);
+
     double inputLabel[10];
-    int label = oneHotEncode(&trainingLabels, 0, inputLabel);
+    int label = oneHotEncode(&trainingLabels, imageIndices[0], inputLabel);
     printf("Input: %d\n[ ", label);
     for (int i = 0; i < 10; i++)
         printf("%d ", (int)inputLabel[i]);
     printf("]\n");
-    
-    uint8_t* inputImage = readImage(&trainingImages, 0);
+
+    uint8_t* inputImage = readImage(&trainingImages, imageIndices[0]);
     vecNormalize(nnet.inputNodes, inputImage, nnet.inputLayer, 255);
     forwardprop(&nnet);
     printf("\nOutput:\n[ ");
@@ -101,8 +90,8 @@ int main() {
 }
 
 
+// Fisher-Yates shuffle
 void shuffleArray(int arr[], int size) {
-    // Fisher-Yates shuffle
     srand(time(NULL));
     
     for (int i = size - 1; i > 0; i--) {
