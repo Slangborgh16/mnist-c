@@ -1,4 +1,4 @@
-# Based of the Makefile found here: https://stackoverflow.com/a/30602701
+# Based off of the Makefile found here: https://stackoverflow.com/a/30602701
 
 SRC_DIR := src
 OBJ_DIR := obj
