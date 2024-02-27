@@ -2,6 +2,7 @@
 
 Matrix* matrixCreate(int rows, int cols) {
     Matrix* matrix = (Matrix*)malloc(sizeof(Matrix));
+
     matrix->rows = rows;
     matrix->cols = cols;
 
@@ -14,7 +15,9 @@ Matrix* matrixCreate(int rows, int cols) {
 
 
 void matrixFree(Matrix* matrix) {
-    for (int i = 0; i < matrix->rows; i++)
+    int rows = matrix->rows;
+
+    for (int i = 0; i < rows; i++)
         free(matrix->values[i]);
 
     free(matrix->values);
@@ -24,14 +27,27 @@ void matrixFree(Matrix* matrix) {
 
 
 void matrixRandomize(Matrix* matrix) {
-    for (int i = 0; i < matrix->rows; i++) {
-        for (int j = 0; j < matrix->cols; j++)
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
             matrix->values[i][j] = (double)rand() / RAND_MAX - 0.5;
     }
 }
 
 
+void matrixFill(Matrix* matrix, double val) {
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    for (int i = 0; i < rows; i++)
+        memset(matrix->values[i], val, sizeof(double) * cols);
+}
+
+
 int matrixCheckDimensions(Matrix* matrix1, Matrix* matrix2) {
+    // Returns 1 if dimensions match and 0 if not
     return (matrix1->rows == matrix2->rows) && (matrix1->cols == matrix2->cols);
 }
 
@@ -78,7 +94,7 @@ Matrix* matrixSubtract(Matrix* matrix1, Matrix* matrix2) {
 }
 
 
-Matrix* matrixDotProduct(Matrix* matrix1, Matrix* matrix2) {
+Matrix* matrixDot(Matrix* matrix1, Matrix* matrix2) {
     if (matrix1->cols != matrix2->rows) {
         printf("Matrix dot product dimension error: %dx%d • %dx%d", \
                 matrix1->rows, matrix1->cols, matrix2->rows, matrix2->cols);
