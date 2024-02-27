@@ -36,7 +36,7 @@ void initializeWeights(int rows, int cols, double** mat);
 void matDotVec(int rows, int cols, double** mat, double* vec, double* output);
 void dotProduct(int rows1, int cols1, int rows2, int cols2, \
         double** mat1, double** mat2, double** output);
-void matTranspose(int rows1, int cols1, int rows2, int cols2, double** mat, double** output);
+void matTranspose(int rows, int cols, double** mat, double** output);
 
 void relu(int cols, double input[cols], double output[cols]);
 void dRelu(int cols, double input[cols], double output[cols]);

@@ -74,9 +74,9 @@ void dotProduct(int rows1, int cols1, int rows2, int cols2, \
 }
 
 
-void matTranspose(int rows1, int cols1, int rows2, int cols2, double** mat, double** output) {
-    for (int i = 0; i < rows1; i++) {
-        for (int j = 0; j < cols2; j++) {
+void matTranspose(int rows, int cols, double** mat, double** output) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             output[j][i] = mat[i][j];
         }
     }
