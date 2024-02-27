@@ -8,6 +8,8 @@
 #include <endian.h>
 #include <string.h>
 
+#include "matrix.h"
+
 typedef struct LabelData {
     uint32_t magicNumber;
     uint32_t numLabels;
@@ -22,10 +24,11 @@ typedef struct ImageData {
     uint8_t* pixelData;
 } ImageData;
 
-int loadLabels(const char* labelsPath, LabelData* labelData);
-int loadImages(const char* imagesPath, ImageData* imageData);
+void loadLabels(const char* labelsPath, LabelData* labelData);
+void loadImages(const char* imagesPath, ImageData* imageData);
 uint8_t* readImage(ImageData* imageData, const int index);
-int pgmExport(ImageData* imageData, const int index, const char* outputPath);
+Matrix* imgToMatrix(ImageData* imageData, const int index);
+void pgmExport(ImageData* imageData, const int index, const char* outputPath);
 int oneHotEncode(LabelData* labelData, const int index, double output[10]);
 
 #endif

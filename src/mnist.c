@@ -1,10 +1,11 @@
 #include "mnist.h"
 
-int loadLabels(const char* labelsPath, struct LabelData* labelData) {
+void loadLabels(const char* labelsPath, struct LabelData* labelData) {
     FILE* fd = fopen(labelsPath, "r");
+
     if (fd == NULL) {
         printf("Error opening file: %s\nerrno: %d\n", labelsPath, errno);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     uint32_t magicNumber;
@@ -21,18 +22,17 @@ int loadLabels(const char* labelsPath, struct LabelData* labelData) {
 
     if (fclose(fd) == EOF) {
         printf("Error closing file.\nerrno: %d\n", errno);
-        return -1;
+        exit(EXIT_FAILURE);
     }
-
-    return 0;
 }
 
 
-int loadImages(const char* imagesPath, struct ImageData* imageData) {
+void loadImages(const char* imagesPath, struct ImageData* imageData) {
     FILE* fd = fopen(imagesPath, "r");
+
     if (fd == NULL) {
         printf("Error opening file: %s\nerrno: %d\n", imagesPath, errno);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     uint32_t magicNumber;
@@ -57,10 +57,27 @@ int loadImages(const char* imagesPath, struct ImageData* imageData) {
 
     if (fclose(fd) == EOF) {
         printf("Error closing file.\nerrno: %d\n", errno);
-        return -1;
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+Matrix* imgToMatrix(ImageData* imageData, const int index) {
+    if (index >= imageData->numImages || index < 0) {
+        printf("Image index %d out of range. Max index: %d\n", index, imageData->numImages - 1);
+        exit(EXIT_FAILURE);
     }
 
-    return 0;
+    int numPixels = imageData->numRows * imageData->numCols;
+    uint8_t* pixels = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
+
+    // Create a column vector for the pixel data
+    Matrix* img = matrixCreate(numPixels, 1);
+
+    for (int i = 0; i < numPixels; i++)
+        img->values[i][0] = (double)pixels[i] / 255;
+
+    return img;
 }
 
 
@@ -73,11 +90,12 @@ uint8_t* readImage(ImageData* imageData, const int index) {
 }
 
 
-int pgmExport(ImageData* imageData, const int index, const char* outputPath) {
+void pgmExport(ImageData* imageData, const int index, const char* outputPath) {
     uint8_t* image = readImage(imageData, index);
+
     if (image == NULL) {
-        printf("Index %d out of range. Max value: %d\n", index, imageData->numImages - 1);
-        return -1;
+        printf("Image index %d out of range. Max index: %d\n", index, imageData->numImages - 1);
+        exit(EXIT_FAILURE);
     }
 
     uint32_t rows = imageData->numRows;
@@ -85,9 +103,10 @@ int pgmExport(ImageData* imageData, const int index, const char* outputPath) {
     uint32_t numPixels = rows * cols;
 
     FILE* fd = fopen(outputPath, "wb");
+
     if (fd == NULL) {
         printf("Error opening file: %s\nerrno: %d\n", outputPath, errno);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     fprintf(fd, "P2\n%u %u\n255\n", cols, rows);
@@ -97,10 +116,8 @@ int pgmExport(ImageData* imageData, const int index, const char* outputPath) {
 
     if (fclose(fd) == EOF) {
         printf("Error closing file.\nerrno: %d\n", errno);
-        return -1;
+        exit(EXIT_FAILURE);
     }
-
-    return 0;
 }
 
 

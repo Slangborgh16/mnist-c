@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #include "mnist.h"
+#include "matrix.h"
 #include "neuralnet.h"
 
 #define HIDDEN_NODES 20
@@ -20,16 +22,8 @@ int main() {
     LabelData trainingLabels;
     ImageData trainingImages;
 
-    if (loadLabels(trainingLabelsPath, &trainingLabels) == -1) {
-        printf("Error reading labels\n");
-        exit(EXIT_FAILURE);
-    }
-
-    if (loadImages(trainingImagesPath, &trainingImages) == -1) {
-        free(trainingLabels.labels);
-        printf("Error loading images\n");
-        exit(EXIT_FAILURE);
-    }
+    loadLabels(trainingLabelsPath, &trainingLabels);
+    loadImages(trainingImagesPath, &trainingImages);
 
     int imageIndices[trainingImages.numImages];
     for (int i = 0; i < trainingImages.numImages; i++)
