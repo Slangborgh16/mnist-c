@@ -44,17 +44,22 @@ int main() {
     nnet.hiddenNodes = HIDDEN_NODES;
     nnet.outputNodes = OUTPUT_NODES;
 
-    nnet.inputLayer = (double*)malloc(sizeof(double) * numPixels);
-    nnet.hiddenLayer = (double*)malloc(sizeof(double) * HIDDEN_NODES);
-    nnet.outputLayer  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+    nnet.z1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
+    nnet.z2  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
 
-    nnet.weights1 = initializeWeights(HIDDEN_NODES, numPixels);
-    nnet.weights2 = initializeWeights(OUTPUT_NODES, HIDDEN_NODES);
+    nnet.a0 = (double*)malloc(sizeof(double) * numPixels);
+    nnet.a1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
+    nnet.a2  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
 
-    nnet.bias1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
-    nnet.bias2 = (double*)malloc(sizeof(double) * OUTPUT_NODES);
-    memset(nnet.bias1, 0, sizeof(double) * HIDDEN_NODES);
-    memset(nnet.bias2, 0, sizeof(double) * OUTPUT_NODES);
+    nnet.w1 = createMatrix(HIDDEN_NODES, numPixels);
+    nnet.w2 = createMatrix(OUTPUT_NODES, HIDDEN_NODES);
+    initializeWeights(HIDDEN_NODES, numPixels, nnet.w1);
+    initializeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
+
+    nnet.b1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
+    nnet.b2 = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+    memset(nnet.b1, 0, sizeof(double) * HIDDEN_NODES);
+    memset(nnet.b2, 0, sizeof(double) * OUTPUT_NODES);
     
     
     shuffleArray(imageIndices, trainingImages.numImages);
@@ -68,23 +73,25 @@ int main() {
     printf("]\n");
 
     uint8_t* inputImage = readImage(&trainingImages, imageIndices[0]);
-    vecNormalize(nnet.inputNodes, inputImage, nnet.inputLayer, 255);
+    vecNormalize(nnet.inputNodes, inputImage, nnet.a0, 255);
     forwardprop(&nnet);
     printf("\nOutput:\n[ ");
     for (int i = 0; i < 10; i++)
-        printf("%.4f ", nnet.outputLayer[i]);
+        printf("%.4f ", nnet.a2[i]);
     printf("]\n");
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
 
-    free(nnet.inputLayer);
-    free(nnet.hiddenLayer);
-    free(nnet.outputLayer);
-    free(nnet.bias1);
-    free(nnet.bias2);
-    freeWeights(HIDDEN_NODES, numPixels, nnet.weights1);
-    freeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.weights2);
+    free(nnet.z1);
+    free(nnet.z2);
+    free(nnet.a0);
+    free(nnet.a1);
+    free(nnet.a2);
+    free(nnet.b1);
+    free(nnet.b2);
+    freeMatrix(HIDDEN_NODES, numPixels, nnet.w1);
+    freeMatrix(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
 
     exit(EXIT_SUCCESS);
 }

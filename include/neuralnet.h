@@ -11,23 +11,27 @@ typedef struct Network {
     int hiddenNodes;
     int outputNodes;
 
-    double* inputLayer;
-    double* hiddenLayer;
-    double* outputLayer;
+    double* z1;
+    double* z2;
 
-    double** weights1;
-    double** weights2;
+    double* a0;
+    double* a1;
+    double* a2;
 
-    double* bias1;
-    double* bias2;
+    double** w1;
+    double** w2;
+
+    double* b1;
+    double* b2;
 } Network;
 
 void vecAdd(int cols, double* a, double* b, double* output);
 void vecSubtract(int cols, double* a, double* b, double* output);
 void vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum);
 
-double** initializeWeights(int rows, int cols);
-void freeWeights(int rows, int cols, double** weights);
+double** createMatrix(int rows, int cols);
+void freeMatrix(int rows, int cols, double** matrix);
+void initializeWeights(int rows, int cols, double** matrix);
 
 void matDotVec(int rows, int cols, double** matrix, double* vec, double* output);
 void dotProduct(int rows1, int cols1, int rows2, int cols2, \
@@ -36,7 +40,7 @@ void matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, d
 
 void relu(int cols, double input[cols], double output[cols]);
 void dRelu(int cols, double input[cols], double output[cols]);
-void softmax(int cols, double input[cols], double output[cols]);
+void softmax(int classes, double input[classes], double output[classes]);
 double crossEntropy(int classes, double* label, double* prediction);
 void forwardprop(Network* nnet);
 

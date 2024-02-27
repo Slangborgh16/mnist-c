@@ -21,25 +21,33 @@ void vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
 }
 
 
-double** initializeWeights(int rows, int cols) {
-    srand(time(NULL));
-
-    double** weights = (double**)malloc(sizeof(double*) * rows);
+double** createMatrix(int rows, int cols) {
+    double** matrix = (double**)malloc(sizeof(double*) * rows);
     for (int i = 0; i < rows; i++) {
-        weights[i] = (double*)malloc(sizeof(double) * cols);
-        for (int j = 0; j < cols; j++)
-            weights[i][j] = (double)rand() / RAND_MAX - 0.5;
+        matrix[i] = (double*)malloc(sizeof(double) * cols);
     }
 
-    return weights;
+    return matrix;
 }
 
 
-void freeWeights(int rows, int cols, double** weights) {
+void freeMatrix(int rows, int cols, double** matrix) {
     for (int i = 0; i < rows; i++)
-        free(weights[i]);
-    free(weights);
+        free(matrix[i]);
+    free(matrix);
 }
+
+
+void initializeWeights(int rows, int cols, double** matrix) {
+    srand(time(NULL));
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matrix[i][j] = (double)rand() / RAND_MAX - 0.5;
+        }
+    }
+}
+
 
 void matDotVec(int rows, int cols, double** matrix, double* vec, double* output) {
     for (int m = 0; m < rows; m++) {
@@ -87,15 +95,15 @@ void dRelu(int cols, double input[cols], double output[cols]) {
 }
 
 
-void softmax(int cols, double input[cols], double output[cols]) {
+void softmax(int classes, double input[classes], double output[classes]) {
     double summation = 0.00f;
-    for (int i = 0; i < cols; i++) {
+    for (int i = 0; i < classes; i++) {
         double val = exp(input[i]);
         summation += val;
         output[i] = val;
     }
 
-    for (int i = 0; i < cols; i++) {
+    for (int i = 0; i < classes; i++) {
         output[i] /= summation;
     }
 }
@@ -115,20 +123,23 @@ void forwardprop(Network* nnet) {
     int hNodes = nnet->hiddenNodes;
     int oNodes = nnet->outputNodes;
 
-    double* iLayer = nnet->inputLayer;
-    double* hLayer = nnet->hiddenLayer;
-    double* oLayer = nnet->outputLayer;
+    double* z1 = nnet->z1;
+    double* z2 = nnet->z2;
 
-    double** w1 = nnet->weights1;
-    double** w2 = nnet->weights2;
+    double* a0 = nnet->a0;
+    double* a1 = nnet->a1;
+    double* a2 = nnet->a2;
 
-    double* b1 = nnet->bias1;
-    double* b2 = nnet->bias2;
+    double** w1 = nnet->w1;
+    double** w2 = nnet->w2;
 
-    matDotVec(hNodes, iNodes, w1, iLayer, hLayer);
-    vecAdd(hNodes, hLayer, b1, hLayer);
-    relu(hNodes, hLayer, hLayer);
-    matDotVec(oNodes, hNodes, w2, hLayer, oLayer);
-    vecAdd(oNodes, oLayer, b2, oLayer);
-    softmax(oNodes, oLayer, oLayer);
+    double* b1 = nnet->b1;
+    double* b2 = nnet->b2;
+
+    matDotVec(hNodes, iNodes, w1, a0, z1);
+    vecAdd(hNodes, z1, b1, z1);
+    relu(hNodes, z1, a1);
+    matDotVec(oNodes, hNodes, w2, a1, z2);
+    vecAdd(oNodes, z2, b2, z2);
+    softmax(oNodes, z2, a2);
 }
