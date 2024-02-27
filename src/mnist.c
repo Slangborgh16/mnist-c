@@ -121,10 +121,15 @@ void pgmExport(ImageData* imageData, const int index, const char* outputPath) {
 }
 
 
-int oneHotEncode(LabelData* labelData, const int index, double output[10]) {
+Matrix* oneHotEncode(LabelData* labelData, const int index) {
     int label = *(labelData->labels + sizeof(uint8_t) * index);    
-    for (int i = 0; i < 10; i++)
-        output[i] = 0.00;
-    output[label] = 1;
-    return label;
+    int classes = 10;
+    Matrix* onehot = matrixCreate(classes, 1);
+
+    for (int i = 0; i < classes; i++)
+        onehot->values[i][0] = 0.0;
+
+    onehot->values[label][0] = 1.0;
+
+    return onehot;
 }

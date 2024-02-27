@@ -29,6 +29,6 @@ void loadImages(const char* imagesPath, ImageData* imageData);
 uint8_t* readImage(ImageData* imageData, const int index);
 Matrix* imgToMatrix(ImageData* imageData, const int index);
 void pgmExport(ImageData* imageData, const int index, const char* outputPath);
-int oneHotEncode(LabelData* labelData, const int index, double output[10]);
+Matrix* oneHotEncode(LabelData* labelData, const int index);
 
 #endif
