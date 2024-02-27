@@ -38,54 +38,59 @@ int main() {
     nnet.hiddenNodes = HIDDEN_NODES;
     nnet.outputNodes = OUTPUT_NODES;
 
-    nnet.z1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
-    nnet.z2  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+    /*
+    nnet.z1 = matrixCreate(HIDDEN_NODES, 1);
+    nnet.z2 = matrixCreate(OUTPUT_NODES, 1);
 
-    nnet.a0 = (double*)malloc(sizeof(double) * numPixels);
-    nnet.a1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
-    nnet.a2  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
+    nnet.a0 = matrixCreate(numPixels, 1);
+    nnet.a1 = matrixCreate(HIDDEN_NODES, 1);
+    nnet.a2 = matrixCreate(OUTPUT_NODES, 1);
+    */
 
-    nnet.w1 = createMat(HIDDEN_NODES, numPixels);
-    nnet.w2 = createMat(OUTPUT_NODES, HIDDEN_NODES);
-    initializeWeights(HIDDEN_NODES, numPixels, nnet.w1);
-    initializeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
+    nnet.w1 = matrixCreate(HIDDEN_NODES, numPixels);
+    nnet.w2 = matrixCreate(OUTPUT_NODES, HIDDEN_NODES);
+    matrixRandomize(nnet.w1);
+    matrixRandomize(nnet.w2);
 
-    nnet.b1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
-    nnet.b2 = (double*)malloc(sizeof(double) * OUTPUT_NODES);
-    memset(nnet.b1, 0, sizeof(double) * HIDDEN_NODES);
-    memset(nnet.b2, 0, sizeof(double) * OUTPUT_NODES);
+    nnet.b1 = matrixCreate(HIDDEN_NODES, 1);
+    nnet.b2 = matrixCreate(OUTPUT_NODES, 1);
+    matrixFill(nnet.b1, 0.00);
+    matrixFill(nnet.b2, 0.00);
     
     
     shuffleArray(imageIndices, trainingImages.numImages);
     printf("Image ID: %d\n", imageIndices[0]);
 
-    double inputLabel[10];
-    int label = oneHotEncode(&trainingLabels, imageIndices[0], inputLabel);
-    printf("Input: %d\n[ ", label);
-    for (int i = 0; i < 10; i++)
-        printf("%d ", (int)inputLabel[i]);
-    printf("]\n");
+    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageIndices[0]);
+    printf("\nInput:\n");
+    matrixPrint(oneHotLabel);
+    printf("\n");
 
-    uint8_t* inputImage = readImage(&trainingImages, imageIndices[0]);
-    vecNormalize(nnet.inputNodes, inputImage, nnet.a0, 255);
-    forwardprop(&nnet);
-    printf("\nOutput:\n[ ");
-    for (int i = 0; i < 10; i++)
-        printf("%.4f ", nnet.a2[i]);
-    printf("]\n");
+    Matrix* input = imgToMatrix(&trainingImages, imageIndices[0]);
+    Matrix* output = forwardprop(&nnet, input);
+
+    printf("\nOutput:\n");
+    matrixPrint(output);
+    printf("\n");
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
 
+    /*
     free(nnet.z1);
     free(nnet.z2);
     free(nnet.a0);
     free(nnet.a1);
     free(nnet.a2);
-    free(nnet.b1);
-    free(nnet.b2);
-    freeMat(HIDDEN_NODES, numPixels, nnet.w1);
-    freeMat(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
+    */
+    matrixFree(nnet.w1);
+    matrixFree(nnet.w2);
+    matrixFree(nnet.b1);
+    matrixFree(nnet.b2);
+
+    matrixFree(oneHotLabel);
+    matrixFree(input);
+    matrixFree(output);
 
     exit(EXIT_SUCCESS);
 }
@@ -93,8 +98,6 @@ int main() {
 
 // Fisher-Yates shuffle
 void shuffleArray(int arr[], int size) {
-    srand(time(NULL));
-    
     for (int i = size - 1; i > 0; i--) {
         int j = rand() % (i + 1);
 
