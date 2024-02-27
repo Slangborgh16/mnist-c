@@ -46,6 +46,19 @@ void matrixFill(Matrix* matrix, double val) {
 }
 
 
+void matrixPrint(Matrix* matrix) {
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            printf("%.4f ", matrix->values[i][j];
+
+        printf("\n\n");
+    }
+}
+
+
 int matrixCheckDimensions(Matrix* matrix1, Matrix* matrix2) {
     // Returns 1 if dimensions match and 0 if not
     return (matrix1->rows == matrix2->rows) && (matrix1->cols == matrix2->cols);
@@ -54,7 +67,7 @@ int matrixCheckDimensions(Matrix* matrix1, Matrix* matrix2) {
 
 Matrix* matrixAdd(Matrix* matrix1, Matrix* matrix2) {
     if (!matrixCheckDimensions(matrix1, matrix2)) {
-        printf("Matrix addition dimension error: %dx%d + %dx%d", \
+        printf("Matrix addition dimension error: %dx%d + %dx%d\n", \
                 matrix1->rows, matrix1->cols, matrix2->rows, matrix2->cols);
         exit(EXIT_FAILURE);
     }
@@ -75,7 +88,7 @@ Matrix* matrixAdd(Matrix* matrix1, Matrix* matrix2) {
 
 Matrix* matrixSubtract(Matrix* matrix1, Matrix* matrix2) {
     if (!matrixCheckDimensions(matrix1, matrix2)) {
-        printf("Matrix subtraction dimension error: %dx%d - %dx%d", \
+        printf("Matrix subtraction dimension error: %dx%d - %dx%d\n", \
                 matrix1->rows, matrix1->cols, matrix2->rows, matrix2->cols);
         exit(EXIT_FAILURE);
     }
@@ -96,7 +109,7 @@ Matrix* matrixSubtract(Matrix* matrix1, Matrix* matrix2) {
 
 Matrix* matrixDot(Matrix* matrix1, Matrix* matrix2) {
     if (matrix1->cols != matrix2->rows) {
-        printf("Matrix dot product dimension error: %dx%d • %dx%d", \
+        printf("Matrix dot product dimension error: %dx%d • %dx%d\n", \
                 matrix1->rows, matrix1->cols, matrix2->rows, matrix2->cols);
         exit(EXIT_FAILURE);
     }

@@ -14,6 +14,7 @@ Matrix* matrixCreate(int rows, int cols);
 void matrixFree(Matrix* matrix);
 void matrixRandomize(Matrix* matrix);
 void matrixFill(Matrix* matrix, double val);
+void matrixPrint(Matrix* matrix);
 int matrixCheckDimensions(Matrix* matrix1, Matrix* matrix2);
 
 Matrix* matrixAdd(Matrix* matrix1, Matrix* matrix2);
