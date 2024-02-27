@@ -21,39 +21,39 @@ void vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum) {
 }
 
 
-double** createMatrix(int rows, int cols) {
-    double** matrix = (double**)malloc(sizeof(double*) * rows);
+double** createMat(int rows, int cols) {
+    double** mat = (double**)malloc(sizeof(double*) * rows);
     for (int i = 0; i < rows; i++) {
-        matrix[i] = (double*)malloc(sizeof(double) * cols);
+        mat[i] = (double*)malloc(sizeof(double) * cols);
     }
 
-    return matrix;
+    return mat;
 }
 
 
-void freeMatrix(int rows, int cols, double** matrix) {
+void freeMat(int rows, int cols, double** mat) {
     for (int i = 0; i < rows; i++)
-        free(matrix[i]);
-    free(matrix);
+        free(mat[i]);
+    free(mat);
 }
 
 
-void initializeWeights(int rows, int cols, double** matrix) {
+void initializeWeights(int rows, int cols, double** mat) {
     srand(time(NULL));
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            matrix[i][j] = (double)rand() / RAND_MAX - 0.5;
+            mat[i][j] = (double)rand() / RAND_MAX - 0.5;
         }
     }
 }
 
 
-void matDotVec(int rows, int cols, double** matrix, double* vec, double* output) {
+void matDotVec(int rows, int cols, double** mat, double* vec, double* output) {
     for (int m = 0; m < rows; m++) {
         double productSum = 0;
         for (int n = 0; n < cols; n++){
-            productSum += matrix[m][n] * vec[n];
+            productSum += mat[m][n] * vec[n];
         }
         output[m] = productSum;
     }
@@ -74,10 +74,10 @@ void dotProduct(int rows1, int cols1, int rows2, int cols2, \
 }
 
 
-void matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output) {
+void matTranspose(int rows1, int cols1, int rows2, int cols2, double** mat, double** output) {
     for (int i = 0; i < rows1; i++) {
         for (int j = 0; j < cols2; j++) {
-            output[j][i] = matrix[i][j];
+            output[j][i] = mat[i][j];
         }
     }
 }

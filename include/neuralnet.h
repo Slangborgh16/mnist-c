@@ -29,14 +29,14 @@ void vecAdd(int cols, double* a, double* b, double* output);
 void vecSubtract(int cols, double* a, double* b, double* output);
 void vecNormalize(int cols, uint8_t* input, double* output, uint8_t maximum);
 
-double** createMatrix(int rows, int cols);
-void freeMatrix(int rows, int cols, double** matrix);
-void initializeWeights(int rows, int cols, double** matrix);
+double** createMat(int rows, int cols);
+void freeMat(int rows, int cols, double** mat);
+void initializeWeights(int rows, int cols, double** mat);
 
-void matDotVec(int rows, int cols, double** matrix, double* vec, double* output);
+void matDotVec(int rows, int cols, double** mat, double* vec, double* output);
 void dotProduct(int rows1, int cols1, int rows2, int cols2, \
         double** mat1, double** mat2, double** output);
-void matTranspose(int rows1, int cols1, int rows2, int cols2, double** matrix, double** output);
+void matTranspose(int rows1, int cols1, int rows2, int cols2, double** mat, double** output);
 
 void relu(int cols, double input[cols], double output[cols]);
 void dRelu(int cols, double input[cols], double output[cols]);

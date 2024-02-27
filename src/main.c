@@ -51,8 +51,8 @@ int main() {
     nnet.a1 = (double*)malloc(sizeof(double) * HIDDEN_NODES);
     nnet.a2  = (double*)malloc(sizeof(double) * OUTPUT_NODES);
 
-    nnet.w1 = createMatrix(HIDDEN_NODES, numPixels);
-    nnet.w2 = createMatrix(OUTPUT_NODES, HIDDEN_NODES);
+    nnet.w1 = createMat(HIDDEN_NODES, numPixels);
+    nnet.w2 = createMat(OUTPUT_NODES, HIDDEN_NODES);
     initializeWeights(HIDDEN_NODES, numPixels, nnet.w1);
     initializeWeights(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
 
@@ -90,8 +90,8 @@ int main() {
     free(nnet.a2);
     free(nnet.b1);
     free(nnet.b2);
-    freeMatrix(HIDDEN_NODES, numPixels, nnet.w1);
-    freeMatrix(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
+    freeMat(HIDDEN_NODES, numPixels, nnet.w1);
+    freeMat(OUTPUT_NODES, HIDDEN_NODES, nnet.w2);
 
     exit(EXIT_SUCCESS);
 }
