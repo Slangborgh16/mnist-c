@@ -1,62 +1,119 @@
 #include "neuralnet.h"
 
-void relu(int cols, double input[cols], double output[cols]) {
-    for (int i = 0; i < cols; i++)
-        output[i] = fmax(0.00f, input[i]);
-}
-
-
-void dRelu(int cols, double input[cols], double output[cols]) {
-    for (int i = 0; i < cols; i++)
-        output[i] = input[i] > 0;
-}
-
-
-void softmax(int classes, double input[classes], double output[classes]) {
-    double summation = 0.00f;
-    for (int i = 0; i < classes; i++) {
-        double val = exp(input[i]);
-        summation += val;
-        output[i] = val;
+void relu(Matrix* input, Matrix* output) {
+    if (!matrixCheckDimensions(input, output)) {
+        printf("ReLU dimension error. Input: %dx%d, Output: %dx%d\n", \
+                input->rows, input->cols, output->rows, output->cols);
+        exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < classes; i++) {
-        output[i] /= summation;
+    int rows = input->rows;
+    int cols = input->cols;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            output->values[i][j] = fmax(0.0, input->values[i][j]);
     }
 }
 
 
-double crossEntropy(int classes, double* label, double* prediction) {
-    int classId = 0;
-    while (label[classId] == 0)
-        classId++;
-    
-    return -log(prediction[classId]);
+void dRelu(Matrix* input, Matrix* output) {
+    if (!matrixCheckDimensions(input, output)) {
+        printf("ReLU derivative dimension error. Input: %dx%d, Output: %dx%d\n", \
+                input->rows, input->cols, output->rows, output->cols);
+        exit(EXIT_FAILURE);
+    }
+
+    int rows = input->rows;
+    int cols = input->cols;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            output->values[i][j] = input->values[i][j] > 0;
+    }
 }
 
 
-void forwardprop(Network* nnet) {
-    int iNodes = nnet->inputNodes;
-    int hNodes = nnet->hiddenNodes;
-    int oNodes = nnet->outputNodes;
+void softmax(Matrix* input, Matrix* output) {
+    // Applies softmax to each column of the matrix
 
-    double* z1 = nnet->z1;
-    double* z2 = nnet->z2;
+    if (!matrixCheckDimensions(input, output)) {
+        printf("Softmax dimension error. Input: %dx%d, Output: %dx%d\n", \
+                input->rows, input->cols, output->rows, output->cols);
+        exit(EXIT_FAILURE);
+    }
 
-    double* a0 = nnet->a0;
-    double* a1 = nnet->a1;
-    double* a2 = nnet->a2;
+    int rows = input->rows;
+    int cols = input->cols;
 
-    double** w1 = nnet->w1;
-    double** w2 = nnet->w2;
+    for (int j = 0; j < cols; j++) {
+        double sum = 0.0;
 
-    double* b1 = nnet->b1;
-    double* b2 = nnet->b2;
+        for (int i = 0; i < rows; i++) {
+            double val = exp(input->values[i][j]);
+            sum += val;
+            output->values[i][j] = val;
+        }
 
-    matDotVec(hNodes, iNodes, w1, a0, z1);
-    vecAdd(hNodes, z1, b1, z1);
-    relu(hNodes, z1, a1);
-    matDotVec(oNodes, hNodes, w2, a1, z2);
-    vecAdd(oNodes, z2, b2, z2);
-    softmax(oNodes, z2, a2);
+        for (int i = 0; i < rows; i++)
+            output->values[i][j] /= sum;
+    }
+}
+
+
+double crossEntropy(Matrix* predictions, Matrix* labels) {
+    // Labels and predictions are expected to be the columns
+    if (!matrixCheckDimensions(predictions, labels)) {
+        printf("Cross entropy dimension error. Predictions: %dx%d, Labels: %dx%d\n", \
+                predictions->rows, predictions->cols, labels->rows, labels->cols);
+        exit(EXIT_FAILURE);
+    }
+
+    int rows = predictions->rows;
+    int cols = predictions->cols;
+    double avgCrossEntropy = 0.0;
+
+    for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < rows; i++) {
+            if (labels->values[i][j] == 0)
+                continue;
+
+            avgCrossEntropy += -1 * log(predictions->values[i][j]);
+            break;
+        }
+    }
+
+    avgCrossEntropy /= cols;
+    return avgCrossEntropy;
+}
+
+
+Matrix* forwardprop(Network* nnet, Matrix* input) {
+    /*
+    Matrix* z1 = nnet->z1;
+    Matrix* z2 = nnet->z2;
+
+    Matrix* a0 = nnet->a0;
+    Matrix* a1 = nnet->a1;
+    Matrix* a2 = nnet->a2;
+    */
+
+    Matrix* w1 = nnet->w1;
+    Matrix* w2 = nnet->w2;
+
+    Matrix* b1 = nnet->b1;
+    Matrix* b2 = nnet->b2;
+
+    Matrix* z1 = matrixDot(w1, input);
+    Matrix* a1 = matrixAdd(z1, b1);
+    relu(a1, a1);
+    Matrix* z2 = matrixDot(w2, a1);
+    Matrix* a2 = matrixAdd(z2, b2);
+    softmax(a2, a2);
+
+    matrixFree(z1);
+    matrixFree(a1);
+    matrixFree(z2);
+
+    return a2;
 }

@@ -6,17 +6,21 @@
 #include <math.h>
 #include <time.h>
 
+#include "matrix.h"
+
 typedef struct Network {
     int inputNodes;
     int hiddenNodes;
     int outputNodes;
 
+    /*
     Matrix* z1;
     Matrix* z2;
 
     Matrix* a0;
     Matrix* a1;
     Matrix* a2;
+    */
 
     Matrix* w1;
     Matrix* w2;
@@ -25,10 +29,10 @@ typedef struct Network {
     Matrix* b2;
 } Network;
 
-void relu(int cols, double input[cols], double output[cols]);
-void dRelu(int cols, double input[cols], double output[cols]);
-void softmax(int classes, double input[classes], double output[classes]);
-double crossEntropy(int classes, double* label, double* prediction);
-void forwardprop(Network* nnet);
+void relu(Matrix* input, Matrix* output);
+void dRelu(Matrix* input, Matrix* output);
+void softmax(Matrix* input, Matrix* output);
+double crossEntropy(Matrix* predictions, Matrix* labels);
+Matrix* forwardprop(Network* nnet, Matrix* input);
 
 #endif
