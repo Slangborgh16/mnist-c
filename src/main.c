@@ -64,6 +64,8 @@ int main() {
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
+    trainingLabels.labels = NULL;
+    trainingImages.pixelData = NULL;
 
     exit(EXIT_SUCCESS);
 }
