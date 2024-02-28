@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #include "mnist.h"
 #include "matrix.h"
@@ -48,14 +49,16 @@ int main() {
     
     
     shuffleArray(imageIndices, trainingImages.numImages);
+    int imageId = imageIndices[0];
 
-    Matrix* input = imgToMatrix(&trainingImages, imageIndices[0]);
+    Matrix* input = imgToMatrix(&trainingImages, imageId);
     Matrix* output = forwardprop(&nnet, input);
 
     printImage(input);
-    printf("Image ID: %d\n", imageIndices[0]);
+    int width = (int)log10(trainingImages.numImages) + 1;
+    printf("Image ID: %0*d -- Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
 
-    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageIndices[0]);
+    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageId);
 
     printf("\nOutput:\n");
     Matrix* output_transpose = matrixTranspose(output);

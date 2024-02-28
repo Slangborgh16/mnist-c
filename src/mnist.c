@@ -61,6 +61,26 @@ void loadImages(const char* imagesPath, struct ImageData* imageData) {
 }
 
 
+int getLabel(LabelData* labelData, const int index) {
+    int label = *(labelData->labels + sizeof(uint8_t) * index);    
+    return label;
+}
+
+
+Matrix* oneHotEncode(LabelData* labelData, const int index) {
+    int label = getLabel(labelData, index);    
+    int classes = 10;
+    Matrix* onehot = matrixCreate(classes, 1);
+
+    for (int i = 0; i < classes; i++)
+        onehot->values[i][0] = 0.0;
+
+    onehot->values[label][0] = 1.0;
+
+    return onehot;
+}
+
+
 Matrix* imgToMatrix(ImageData* imageData, const int index) {
     if (index >= imageData->numImages || index < 0) {
         printf("Image index %d out of range. Max index: %d\n", index, imageData->numImages - 1);
@@ -77,20 +97,6 @@ Matrix* imgToMatrix(ImageData* imageData, const int index) {
         img->values[i][0] = (double)pixels[i] / 255;
 
     return img;
-}
-
-
-Matrix* oneHotEncode(LabelData* labelData, const int index) {
-    int label = *(labelData->labels + sizeof(uint8_t) * index);    
-    int classes = 10;
-    Matrix* onehot = matrixCreate(classes, 1);
-
-    for (int i = 0; i < classes; i++)
-        onehot->values[i][0] = 0.0;
-
-    onehot->values[label][0] = 1.0;
-
-    return onehot;
 }
 
 
