@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 
@@ -25,41 +26,44 @@ int main() {
 
     loadLabels(trainingLabelsPath, &trainingLabels);
     loadImages(trainingImagesPath, &trainingImages);
-
-    int imageIndices[trainingImages.numImages];
-    for (int i = 0; i < trainingImages.numImages; i++)
-        imageIndices[i] = i;
-
+    int numImages = trainingImages.numImages;
     uint32_t numPixels = trainingImages.numPixels;
+
+    int imageIndices[numImages];
+    for (int i = 0; i < numImages; i++)
+        imageIndices[i] = i;
+    shuffleArray(imageIndices, numImages);
 
     Network* nnet = neuralNetCreate(numPixels, HIDDEN_NODES, OUTPUT_NODES);
     
-    
-    shuffleArray(imageIndices, trainingImages.numImages);
-    int imageId = imageIndices[0];
+    for (int i = 0; i < 100; i++) {
+        printf("\033[H\033[J");
+        int imageId = imageIndices[i];
 
-    Matrix* input = imgToMatrix(&trainingImages, imageId);
-    Matrix* output = forwardprop(nnet, input);
+        Matrix* input = imgToMatrix(&trainingImages, imageId);
+        Matrix* output = forwardprop(nnet, input);
+        Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageId);
 
-    printImage(input);
-    int width = (int)log10(trainingImages.numImages) + 1;
-    printf("Image ID: %0*d     Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
+        int width = (int)log10(numImages) + 1;
+        printImage(input);
+        printf("Image ID: %0*d     Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
 
-    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageId);
+        printf("\nOutput:\n");
+        Matrix* output_transpose = matrixTranspose(output);
+        matrixPrint(output_transpose);
 
-    printf("\nOutput:\n");
-    Matrix* output_transpose = matrixTranspose(output);
-    matrixPrint(output_transpose);
+        matrixFree(input);
+        matrixFree(output);
+        matrixFree(oneHotLabel);
+        matrixFree(output_transpose);
 
-    free(trainingLabels.labels);
-    free(trainingImages.pixelData);
+        sleep(1);
+    }
 
     neuralNetFree(nnet);
 
-    matrixFree(oneHotLabel);
-    matrixFree(input);
-    matrixFree(output);
-    matrixFree(output_transpose);
+    free(trainingLabels.labels);
+    free(trainingImages.pixelData);
 
     exit(EXIT_SUCCESS);
 }
