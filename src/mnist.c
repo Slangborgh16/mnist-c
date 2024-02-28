@@ -100,3 +100,20 @@ Matrix* oneHotEncode(LabelData* labelData, const int index) {
 
     return onehot;
 }
+
+
+void printImage(Matrix* matrix) {
+    int idx = 0;
+    for (int i = 0; i < 28; i++) {
+        for (int j = 0; j < 28; j++) {
+            if (matrix->values[idx][0] > 0) {
+                printf(" ");
+            } else {
+                printf("█");
+            }
+
+            idx++;
+        }
+        printf("\n");
+    }
+}

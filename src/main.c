@@ -50,17 +50,17 @@ int main() {
     shuffleArray(imageIndices, trainingImages.numImages);
     printf("Image ID: %d\n", imageIndices[0]);
 
-    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageIndices[0]);
-    printf("\nInput:\n");
-    matrixPrint(oneHotLabel);
-    printf("\n");
-
     Matrix* input = imgToMatrix(&trainingImages, imageIndices[0]);
     Matrix* output = forwardprop(&nnet, input);
 
+    printImage(input);
+
+    Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageIndices[0]);
+    printf("\nInput:\n");
+    matrixPrint(oneHotLabel);
+
     printf("\nOutput:\n");
     matrixPrint(output);
-    printf("\n");
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
