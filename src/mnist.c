@@ -80,14 +80,6 @@ Matrix* imgToMatrix(ImageData* imageData, const int index) {
 }
 
 
-uint8_t* readImage(ImageData* imageData, const int index) {
-    if (index >= imageData->numImages || index < 0) return NULL;
-
-    uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * imageData->numPixels * index;
-    return pixelDataPtr;
-}
-
-
 Matrix* oneHotEncode(LabelData* labelData, const int index) {
     int label = *(labelData->labels + sizeof(uint8_t) * index);    
     int classes = 10;

@@ -25,7 +25,6 @@ typedef struct ImageData {
 
 void loadLabels(const char* labelsPath, LabelData* labelData);
 void loadImages(const char* imagesPath, ImageData* imageData);
-uint8_t* readImage(ImageData* imageData, const int index);
 Matrix* imgToMatrix(ImageData* imageData, const int index);
 Matrix* oneHotEncode(LabelData* labelData, const int index);
 void printImage(Matrix* matrix);
