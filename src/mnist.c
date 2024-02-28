@@ -48,9 +48,8 @@ void loadImages(const char* imagesPath, struct ImageData* imageData) {
 
     imageData->magicNumber = be32toh(magicNumber);
     imageData->numImages = be32toh(numImages);
-    imageData->numRows = be32toh(numRows);
-    imageData->numCols = be32toh(numCols);
-    totalPixels = imageData->numImages * imageData->numRows * imageData->numCols;
+    imageData->numPixels = be32toh(numRows) * be32toh(numCols);
+    totalPixels = imageData->numImages * imageData->numPixels;
     imageData->pixelData = (uint8_t*)malloc(sizeof(uint8_t) * totalPixels);
 
     fread(imageData->pixelData, sizeof(uint8_t), totalPixels, fd);
@@ -68,7 +67,7 @@ Matrix* imgToMatrix(ImageData* imageData, const int index) {
         exit(EXIT_FAILURE);
     }
 
-    int numPixels = imageData->numRows * imageData->numCols;
+    int numPixels = imageData->numPixels;
     uint8_t* pixels = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
 
     // Create a column vector for the pixel data
@@ -84,40 +83,8 @@ Matrix* imgToMatrix(ImageData* imageData, const int index) {
 uint8_t* readImage(ImageData* imageData, const int index) {
     if (index >= imageData->numImages || index < 0) return NULL;
 
-    uint32_t numPixels = imageData->numRows * imageData->numCols;
-    uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
+    uint8_t* pixelDataPtr = imageData->pixelData + sizeof(uint8_t) * imageData->numPixels * index;
     return pixelDataPtr;
-}
-
-
-void pgmExport(ImageData* imageData, const int index, const char* outputPath) {
-    uint8_t* image = readImage(imageData, index);
-
-    if (image == NULL) {
-        printf("Image index %d out of range. Max index: %d\n", index, imageData->numImages - 1);
-        exit(EXIT_FAILURE);
-    }
-
-    uint32_t rows = imageData->numRows;
-    uint32_t cols = imageData->numCols;
-    uint32_t numPixels = rows * cols;
-
-    FILE* fd = fopen(outputPath, "wb");
-
-    if (fd == NULL) {
-        printf("Error opening file: %s\nerrno: %d\n", outputPath, errno);
-        exit(EXIT_FAILURE);
-    }
-
-    fprintf(fd, "P2\n%u %u\n255\n", cols, rows);
-    for (uint32_t i = 0; i < numPixels; ++i) {
-        fprintf(fd, "%d ", image[i]);
-    }
-
-    if (fclose(fd) == EOF) {
-        printf("Error closing file.\nerrno: %d\n", errno);
-        exit(EXIT_FAILURE);
-    }
 }
 
 

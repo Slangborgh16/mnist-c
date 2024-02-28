@@ -29,23 +29,12 @@ int main() {
     for (int i = 0; i < trainingImages.numImages; i++)
         imageIndices[i] = i;
 
-    uint32_t rows = trainingImages.numRows;
-    uint32_t cols = trainingImages.numCols;
-    uint32_t numPixels = rows * cols;
+    uint32_t numPixels = trainingImages.numPixels;
 
     Network nnet;
     nnet.inputNodes = numPixels;
     nnet.hiddenNodes = HIDDEN_NODES;
     nnet.outputNodes = OUTPUT_NODES;
-
-    /*
-    nnet.z1 = matrixCreate(HIDDEN_NODES, 1);
-    nnet.z2 = matrixCreate(OUTPUT_NODES, 1);
-
-    nnet.a0 = matrixCreate(numPixels, 1);
-    nnet.a1 = matrixCreate(HIDDEN_NODES, 1);
-    nnet.a2 = matrixCreate(OUTPUT_NODES, 1);
-    */
 
     nnet.w1 = matrixCreate(HIDDEN_NODES, numPixels);
     nnet.w2 = matrixCreate(OUTPUT_NODES, HIDDEN_NODES);
@@ -76,13 +65,6 @@ int main() {
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
 
-    /*
-    free(nnet.z1);
-    free(nnet.z2);
-    free(nnet.a0);
-    free(nnet.a1);
-    free(nnet.a2);
-    */
     matrixFree(nnet.w1);
     matrixFree(nnet.w2);
     matrixFree(nnet.b1);

@@ -13,15 +13,6 @@ typedef struct Network {
     int hiddenNodes;
     int outputNodes;
 
-    /*
-    Matrix* z1;
-    Matrix* z2;
-
-    Matrix* a0;
-    Matrix* a1;
-    Matrix* a2;
-    */
-
     Matrix* w1;
     Matrix* w2;
 

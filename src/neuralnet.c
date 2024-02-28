@@ -89,15 +89,6 @@ double crossEntropy(Matrix* predictions, Matrix* labels) {
 
 
 Matrix* forwardprop(Network* nnet, Matrix* input) {
-    /*
-    Matrix* z1 = nnet->z1;
-    Matrix* z2 = nnet->z2;
-
-    Matrix* a0 = nnet->a0;
-    Matrix* a1 = nnet->a1;
-    Matrix* a2 = nnet->a2;
-    */
-
     Matrix* w1 = nnet->w1;
     Matrix* w2 = nnet->w2;
 
