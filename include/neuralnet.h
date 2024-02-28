@@ -9,10 +9,6 @@
 #include "matrix.h"
 
 typedef struct Network {
-    int inputNodes;
-    int hiddenNodes;
-    int outputNodes;
-
     Matrix* w1;
     Matrix* w2;
 
@@ -20,6 +16,8 @@ typedef struct Network {
     Matrix* b2;
 } Network;
 
+Network* neuralNetCreate(int inputNodes, int hiddenNodes, int outputNodes);
+void neuralNetFree(Network* nnet);
 void relu(Matrix* input, Matrix* output);
 void dRelu(Matrix* input, Matrix* output);
 void softmax(Matrix* input, Matrix* output);

@@ -1,5 +1,33 @@
 #include "neuralnet.h"
 
+Network* neuralNetCreate(int inputNodes, int hiddenNodes, int outputNodes) {
+    Network* nnet = (Network*)malloc(sizeof(Network));
+
+    nnet->w1 = matrixCreate(hiddenNodes, inputNodes);
+    nnet->w2 = matrixCreate(outputNodes, hiddenNodes);
+    matrixRandomize(nnet->w1);
+    matrixRandomize(nnet->w2);
+
+    nnet->b1 = matrixCreate(hiddenNodes, 1);
+    nnet->b2 = matrixCreate(outputNodes, 1);
+    matrixFill(nnet->b1, 0.0);
+    matrixFill(nnet->b2, 0.0);
+
+    return nnet;
+}
+
+
+void neuralNetFree(Network* nnet) {
+    matrixFree(nnet->w1);
+    matrixFree(nnet->w2);
+    matrixFree(nnet->b1);
+    matrixFree(nnet->b2);
+
+    free(nnet);
+    nnet = NULL;
+}
+
+
 void relu(Matrix* input, Matrix* output) {
     if (!matrixCheckDimensions(input, output)) {
         printf("ReLU dimension error. Input: %dx%d, Output: %dx%d\n", \

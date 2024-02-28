@@ -32,31 +32,18 @@ int main() {
 
     uint32_t numPixels = trainingImages.numPixels;
 
-    Network nnet;
-    nnet.inputNodes = numPixels;
-    nnet.hiddenNodes = HIDDEN_NODES;
-    nnet.outputNodes = OUTPUT_NODES;
-
-    nnet.w1 = matrixCreate(HIDDEN_NODES, numPixels);
-    nnet.w2 = matrixCreate(OUTPUT_NODES, HIDDEN_NODES);
-    matrixRandomize(nnet.w1);
-    matrixRandomize(nnet.w2);
-
-    nnet.b1 = matrixCreate(HIDDEN_NODES, 1);
-    nnet.b2 = matrixCreate(OUTPUT_NODES, 1);
-    matrixFill(nnet.b1, 0.00);
-    matrixFill(nnet.b2, 0.00);
+    Network* nnet = neuralNetCreate(numPixels, HIDDEN_NODES, OUTPUT_NODES);
     
     
     shuffleArray(imageIndices, trainingImages.numImages);
     int imageId = imageIndices[0];
 
     Matrix* input = imgToMatrix(&trainingImages, imageId);
-    Matrix* output = forwardprop(&nnet, input);
+    Matrix* output = forwardprop(nnet, input);
 
     printImage(input);
     int width = (int)log10(trainingImages.numImages) + 1;
-    printf("Image ID: %0*d -- Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
+    printf("Image ID: %0*d     Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
 
     Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageId);
 
@@ -67,10 +54,7 @@ int main() {
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
 
-    matrixFree(nnet.w1);
-    matrixFree(nnet.w2);
-    matrixFree(nnet.b1);
-    matrixFree(nnet.b2);
+    neuralNetFree(nnet);
 
     matrixFree(oneHotLabel);
     matrixFree(input);
