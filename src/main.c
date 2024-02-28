@@ -48,19 +48,18 @@ int main() {
     
     
     shuffleArray(imageIndices, trainingImages.numImages);
-    printf("Image ID: %d\n", imageIndices[0]);
 
     Matrix* input = imgToMatrix(&trainingImages, imageIndices[0]);
     Matrix* output = forwardprop(&nnet, input);
 
     printImage(input);
+    printf("Image ID: %d\n", imageIndices[0]);
 
     Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageIndices[0]);
-    printf("\nInput:\n");
-    matrixPrint(oneHotLabel);
 
     printf("\nOutput:\n");
-    matrixPrint(output);
+    Matrix* output_transpose = matrixTranspose(output);
+    matrixPrint(output_transpose);
 
     free(trainingLabels.labels);
     free(trainingImages.pixelData);
@@ -73,6 +72,7 @@ int main() {
     matrixFree(oneHotLabel);
     matrixFree(input);
     matrixFree(output);
+    matrixFree(output_transpose);
 
     exit(EXIT_SUCCESS);
 }
