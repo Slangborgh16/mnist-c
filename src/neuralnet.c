@@ -89,6 +89,20 @@ void softmax(Matrix* input, Matrix* output) {
 }
 
 
+Matrix* dSoftmax(Matrix* matrix) {
+    // Softmax derivative: a(1 - a)
+    Matrix* ones = matrixCreate(input->rows, input->cols);
+    matrixFill(ones, 1.0);
+
+    Matrix* difference = matrixSubtract(ones, input);
+    matrixFree(ones);
+    Matrix* derivative = matrixHadamard(input, difference);
+    matrixFree(difference);
+
+    return derivative;
+}
+
+
 double crossEntropy(Matrix* predictions, Matrix* labels) {
     // Labels and predictions are expected to be the columns
     if (!matrixCheckDimensions(predictions, labels)) {
@@ -135,4 +149,29 @@ Matrix* forwardprop(Network* nnet, Matrix* input) {
     matrixFree(z2);
 
     return a2;
+}
+
+
+Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
+    Matrix* w1 = nnet->w1;
+    Matrix* w2 = nnet->w2;
+
+    Matrix* b1 = nnet->b1;
+    Matrix* b2 = nnet->b2;
+
+    Matrix* z1 = matrixDot(w1, input);
+    Matrix* a1 = matrixAdd(z1, b1);
+    relu(a1, a1);
+    Matrix* z2 = matrixDot(w2, a1);
+    Matrix* a2 = matrixAdd(z2, b2);
+    softmax(a2, a2);
+
+    // Last layer adjustments
+    // Weight adjustment: (a - t)(a_prev) where t is onehot encoded label
+    // Bias adjustment: a - t
+    Matrix* a2Error = matrixSubtract(a2, onehot);
+    Matrix* w2Adj = matrixDot(w2Transpose, a2Error);
+
+    // First layer adjustments
+    //
 }

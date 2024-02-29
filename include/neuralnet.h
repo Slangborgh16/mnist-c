@@ -21,7 +21,9 @@ void neuralNetFree(Network* nnet);
 void relu(Matrix* input, Matrix* output);
 void dRelu(Matrix* input, Matrix* output);
 void softmax(Matrix* input, Matrix* output);
+Matrix* dSoftmax(Matrix* matrix);
 double crossEntropy(Matrix* predictions, Matrix* labels);
 Matrix* forwardprop(Network* nnet, Matrix* input);
+Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot);
 
 #endif
