@@ -18,11 +18,13 @@ typedef struct Network {
 
 Network* neuralNetCreate(int inputNodes, int hiddenNodes, int outputNodes);
 void neuralNetFree(Network* nnet);
-void relu(Matrix* input, Matrix* output);
-void dRelu(Matrix* input, Matrix* output);
-void softmax(Matrix* input, Matrix* output);
+
+Matrix* relu(Matrix* matrix);
+Matrix* dRelu(Matrix* matrix);
+Matrix* softmax(Matrix* matrix);
 Matrix* dSoftmax(Matrix* matrix);
 double crossEntropy(Matrix* predictions, Matrix* labels);
+
 Matrix* forwardprop(Network* nnet, Matrix* input);
 Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot);
 
