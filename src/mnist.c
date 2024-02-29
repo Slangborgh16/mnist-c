@@ -1,74 +1,68 @@
 #include "mnist.h"
 
-void loadLabels(const char* labelsPath, struct LabelData* labelData) {
-    FILE* fd = fopen(labelsPath, "r");
+void loadDataset(Dataset* dataset, const char* labelsPath, const char* imagesPath) {
+    // Load labels
+    FILE* labelFd = fopen(labelsPath, "r");
 
-    if (fd == NULL) {
-        printf("Error opening file: %s\nerrno: %d\n", labelsPath, errno);
+    if (labelFd == NULL) {
+        printf("Error opening labels file: %s\nerrno: %d\n", labelsPath, errno);
         exit(EXIT_FAILURE);
     }
 
-    uint32_t magicNumber;
-    uint32_t numLabels;
-
-    fread(&magicNumber, sizeof(uint32_t), 1, fd);
-    fread(&numLabels, sizeof(uint32_t), 1, fd);
-
-    labelData->magicNumber = be32toh(magicNumber);
-    labelData->numLabels = be32toh(numLabels);
-    labelData->labels = (uint8_t*)malloc(sizeof(uint8_t) * labelData->numLabels);
-
-    fread(labelData->labels, sizeof(uint8_t), labelData->numLabels, fd);
-
-    if (fclose(fd) == EOF) {
-        printf("Error closing file.\nerrno: %d\n", errno);
-        exit(EXIT_FAILURE);
-    }
-}
-
-
-void loadImages(const char* imagesPath, struct ImageData* imageData) {
-    FILE* fd = fopen(imagesPath, "r");
-
-    if (fd == NULL) {
-        printf("Error opening file: %s\nerrno: %d\n", imagesPath, errno);
-        exit(EXIT_FAILURE);
-    }
-
-    uint32_t magicNumber;
     uint32_t numImages;
-    uint32_t numRows;
-    uint32_t numCols;
-    uint32_t totalPixels;
 
-    fread(&magicNumber, sizeof(uint32_t), 1, fd);
-    fread(&numImages, sizeof(uint32_t), 1, fd);
-    fread(&numRows, sizeof(uint32_t), 1, fd);
-    fread(&numCols, sizeof(uint32_t), 1, fd);
+    fseek(labelFd, sizeof(uint32_t), SEEK_CUR);
+    fread(&numImages, sizeof(uint32_t), 1, labelFd);
+    numImages = be32toh(numImages);
 
-    imageData->magicNumber = be32toh(magicNumber);
-    imageData->numImages = be32toh(numImages);
-    imageData->numPixels = be32toh(numRows) * be32toh(numCols);
-    totalPixels = imageData->numImages * imageData->numPixels;
-    imageData->pixelData = (uint8_t*)malloc(sizeof(uint8_t) * totalPixels);
+    dataset->numImages = numImages;
+    dataset->labels = (uint8_t*)malloc(sizeof(uint8_t) * numImages);
+    fread(dataset->labels, sizeof(uint8_t), numImages, labelFd);
 
-    fread(imageData->pixelData, sizeof(uint8_t), totalPixels, fd);
+    if (fclose(labelFd) == EOF) {
+        printf("Error closing labels file.\nerrno: %d\n", errno);
+        exit(EXIT_FAILURE);
+    }
 
-    if (fclose(fd) == EOF) {
-        printf("Error closing file.\nerrno: %d\n", errno);
+    // Load images
+    FILE* imageFd = fopen(imagesPath, "r");
+
+    if (imageFd == NULL) {
+        printf("Error opening image file: %s\nerrno: %d\n", imagesPath, errno);
+        exit(EXIT_FAILURE);
+    }
+
+    uint32_t rows;
+    uint32_t cols;
+    uint32_t numPixels;
+
+    fseek(imageFd, sizeof(uint32_t) * 2, SEEK_CUR);
+    fread(&rows, sizeof(uint32_t), 1, imageFd);
+    fread(&cols, sizeof(uint32_t), 1, imageFd);
+    rows = be32toh(rows);
+    cols = be32toh(cols);
+    numPixels = rows * cols;
+
+    dataset->imageRows = rows;
+    dataset->imageCols = cols;
+    dataset->pixelData = (uint8_t*)malloc(sizeof(uint8_t) * numPixels * numImages);
+    fread(dataset->pixelData, sizeof(uint8_t), numPixels * numImages, imageFd);
+
+    if (fclose(imageFd) == EOF) {
+        printf("Error closing image file.\nerrno: %d\n", errno);
         exit(EXIT_FAILURE);
     }
 }
 
 
-int getLabel(LabelData* labelData, const int index) {
-    int label = *(labelData->labels + sizeof(uint8_t) * index);    
+int getLabel(Dataset* dataset, const int index) {
+    int label = *(dataset->labels + sizeof(uint8_t) * index);    
     return label;
 }
 
 
-Matrix* oneHotEncode(LabelData* labelData, const int index) {
-    int label = getLabel(labelData, index);    
+Matrix* oneHotEncode(Dataset* dataset, const int index) {
+    int label = getLabel(dataset, index);    
     int classes = 10;
     Matrix* onehot = matrixCreate(classes, 1);
 
@@ -81,14 +75,14 @@ Matrix* oneHotEncode(LabelData* labelData, const int index) {
 }
 
 
-Matrix* imgToMatrix(ImageData* imageData, const int index) {
-    if (index >= imageData->numImages || index < 0) {
-        printf("Image index %d out of range. Max index: %d\n", index, imageData->numImages - 1);
+Matrix* imgToMatrix(Dataset* dataset, const int index) {
+    if (index >= dataset->numImages || index < 0) {
+        printf("Image index %d out of range. Max index: %d\n", index, dataset->numImages - 1);
         exit(EXIT_FAILURE);
     }
 
-    int numPixels = imageData->numPixels;
-    uint8_t* pixels = imageData->pixelData + sizeof(uint8_t) * numPixels * index;
+    int numPixels = dataset->imageRows * dataset->imageCols;
+    uint8_t* pixels = dataset->pixelData + sizeof(uint8_t) * numPixels * index;
 
     // Create a column vector for the pixel data
     Matrix* img = matrixCreate(numPixels, 1);
@@ -100,11 +94,15 @@ Matrix* imgToMatrix(ImageData* imageData, const int index) {
 }
 
 
-void printImage(Matrix* matrix) {
-    int idx = 0;
-    for (int i = 0; i < 28; i++) {
-        for (int j = 0; j < 28; j++) {
-            double val = matrix->values[idx][0];
+void printImage(Dataset* dataset, const int index) {
+    int rows = dataset->imageRows;
+    int cols = dataset->imageCols;
+    uint8_t* pixels = dataset->pixelData + sizeof(uint8_t) * rows * cols * index;
+
+    int x = 0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            double val = (double)pixels[x] / 255.0;
 
             if (val > 0.75) {
                 printf(" ");
@@ -118,7 +116,7 @@ void printImage(Matrix* matrix) {
                 printf("█");
             }
 
-            idx++;
+            x++;
         }
         printf("\n");
     }

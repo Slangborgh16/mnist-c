@@ -21,13 +21,11 @@ int main() {
     const char trainingLabelsPath[] = "dataset/train-labels-idx1-ubyte";
     const char trainingImagesPath[] = "dataset/train-images-idx3-ubyte";
 
-    LabelData trainingLabels;
-    ImageData trainingImages;
+    Dataset training;
 
-    loadLabels(trainingLabelsPath, &trainingLabels);
-    loadImages(trainingImagesPath, &trainingImages);
-    int numImages = trainingImages.numImages;
-    uint32_t numPixels = trainingImages.numPixels;
+    loadDataset(&training, trainingLabelsPath, trainingImagesPath);
+    int numImages = training.numImages;
+    uint32_t numPixels = training.imageRows * training.imageCols;
 
     int imageIndices[numImages];
     for (int i = 0; i < numImages; i++)
@@ -40,13 +38,13 @@ int main() {
         printf("\033[H\033[J");
         int imageId = imageIndices[i];
 
-        Matrix* input = imgToMatrix(&trainingImages, imageId);
+        Matrix* input = imgToMatrix(&training, imageId);
         Matrix* output = forwardprop(nnet, input);
-        Matrix* oneHotLabel = oneHotEncode(&trainingLabels, imageId);
+        Matrix* oneHotLabel = oneHotEncode(&training, imageId);
 
         int width = (int)log10(numImages) + 1;
-        printImage(input);
-        printf("Image ID: %0*d     Label: %d\n", width, imageId + 1, getLabel(&trainingLabels, imageId));
+        printImage(&training, imageId);
+        printf("Image ID: %0*d     Label: %d\n", width, imageId + 1, getLabel(&training, imageId));
 
         printf("\nOutput:\n");
         Matrix* output_transpose = matrixTranspose(output);
@@ -62,10 +60,10 @@ int main() {
 
     neuralNetFree(nnet);
 
-    free(trainingLabels.labels);
-    free(trainingImages.pixelData);
-    trainingLabels.labels = NULL;
-    trainingImages.pixelData = NULL;
+    free(training.labels);
+    free(training.pixelData);
+    training.labels = NULL;
+    training.pixelData = NULL;
 
     exit(EXIT_SUCCESS);
 }

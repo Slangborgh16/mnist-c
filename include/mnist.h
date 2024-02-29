@@ -10,24 +10,19 @@
 
 #include "matrix.h"
 
-typedef struct LabelData {
-    uint32_t magicNumber;
-    uint32_t numLabels;
-    uint8_t* labels;
-} LabelData;
-
-typedef struct ImageData {
-    uint32_t magicNumber;
+typedef struct Dataset {
     uint32_t numImages;
-    uint32_t numPixels;
-    uint8_t* pixelData;
-} ImageData;
+    uint32_t imageRows;
+    uint32_t imageCols;
 
-void loadLabels(const char* labelsPath, LabelData* labelData);
-void loadImages(const char* imagesPath, ImageData* imageData);
-int getLabel(LabelData* labelData, const int index);
-Matrix* oneHotEncode(LabelData* labelData, const int index);
-Matrix* imgToMatrix(ImageData* imageData, const int index);
-void printImage(Matrix* matrix);
+    uint8_t* labels;
+    uint8_t* pixelData;
+} Dataset;
+
+void loadDataset(Dataset* dataset, const char* labelsPath, const char* imagesPath);
+int getLabel(Dataset* dataset, const int index);
+Matrix* oneHotEncode(Dataset* dataset, const int index);
+Matrix* imgToMatrix(Dataset* dataset, const int index);
+void printImage(Dataset* dataset, const int index);
 
 #endif
