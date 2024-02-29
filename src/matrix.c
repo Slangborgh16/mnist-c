@@ -133,6 +133,28 @@ Matrix* matrixDot(Matrix* matrix1, Matrix* matrix2) {
 }
 
 
+// Element-wise multiplication
+Matrix* matrixHadamard(Matrix* matrix1, Matrix* matrix2) {
+    if (!matrixCheckDimensions(matrix1, matrix2)) {
+        printf("Matrix Hadamard product dimension error: %dx%d - %dx%d\n", \
+                matrix1->rows, matrix1->cols, matrix2->rows, matrix2->cols);
+        exit(EXIT_FAILURE);
+    }
+
+    int rows = matrix1->rows;
+    int cols = matrix1->cols;
+
+    Matrix* hadamardProduct = matrixCreate(rows, cols);
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            hadamardProduct->values[i][j] = matrix1->values[i][j] * matrix2->values[i][j];
+    }
+
+    return hadamardProduct;
+}
+
+
 Matrix* matrixTranspose(Matrix* matrix) {
     int rows = matrix->rows;
     int cols = matrix->cols;
