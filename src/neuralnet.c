@@ -29,8 +29,8 @@ void neuralNetFree(Network* nnet) {
 
 
 Matrix* relu(Matrix* matrix) {
-    int rows = input->rows;
-    int cols = input->cols;
+    int rows = matrix->rows;
+    int cols = matrix->cols;
 
     Matrix* reluMatrix = matrixCreate(rows, cols);
 
@@ -44,8 +44,8 @@ Matrix* relu(Matrix* matrix) {
 
 
 Matrix* dRelu(Matrix* matrix) {
-    int rows = input->rows;
-    int cols = input->cols;
+    int rows = matrix->rows;
+    int cols = matrix->cols;
 
     Matrix* dReluMatrix = matrixCreate(rows, cols);
 
@@ -60,8 +60,8 @@ Matrix* dRelu(Matrix* matrix) {
 
 Matrix* softmax(Matrix* matrix) {
     // Applies softmax to each column of the matrix
-    int rows = input->rows;
-    int cols = input->cols;
+    int rows = matrix->rows;
+    int cols = matrix->cols;
 
     Matrix* softmaxMatrix = matrixCreate(rows, cols);
 
@@ -155,18 +155,21 @@ Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
     Matrix* b2 = nnet->b2;
 
     Matrix* z1 = matrixDot(w1, input);
-    Matrix* a1 = matrixAdd(z1, b1);
-    relu(a1, a1);
+    Matrix* z1Biased = matrixAdd(z1, b1);
+    Matrix* a1 = relu(z1Biased);
     Matrix* z2 = matrixDot(w2, a1);
-    Matrix* a2 = matrixAdd(z2, b2);
-    softmax(a2, a2);
+    Matrix* z2Biased = matrixAdd(z2, b2);
+    Matrix* a2 = softmax(z2Biased);
 
     // Last layer adjustments
     // Weight adjustment: (a - t)(a_prev) where t is onehot encoded label
     // Bias adjustment: a - t
     Matrix* a2Error = matrixSubtract(a2, onehot);
-    Matrix* w2Adj = matrixDot(w2Transpose, a2Error);
+    Matrix* w2Adj = matrixDot(a1, a2Error);
 
     // First layer adjustments
     //
+
+    // PLACEHOLDER SO I CAN TEST COMPILE
+    return w1;
 }
