@@ -148,6 +148,8 @@ Matrix* forwardprop(Network* nnet, Matrix* input) {
 
 
 Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
+    // I don't like how these lines are straight from the forwardprop function
+    // Need to come up with a better solution
     Matrix* w1 = nnet->w1;
     Matrix* w2 = nnet->w2;
 
@@ -162,13 +164,32 @@ Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
     Matrix* a2 = softmax(z2Biased);
 
     // Last layer adjustments
-    // Weight adjustment: (a - t)(a_prev) where t is onehot encoded label
-    // Bias adjustment: a - t
-    Matrix* a2Error = matrixSubtract(a2, onehot);
-    Matrix* w2Adj = matrixDot(a1, a2Error);
+    // Bias adjustment: a2 - t -- Where t is one-hot encoded label
+    // Weight adjustment: (a2 - t) dot a1^T -- At least I think...
+    Matrix* b2Adjustment = matrixSubtract(a2, onehot);
+    Matrix* a1Transpose = matrixTranspose(a1);
+    Matrix* w2Adjustment = matrixDot(b2Adjustment, a1Transpose);
+    matrixFree(a1Transpose);
 
     // First layer adjustments
-    //
+    // Bias adjustment: (w2^T dot b2Adjustment) hadamard dRelu(z1)
+    // Weight adjustment: b1Adjustment dot a0^T
+    Matrix* w2Transpose = matrixTranspose(w2);
+    Matrix* w2DotB2Adjustment = matrixDot(w2Transpose, b2Adjustment);
+    Matrix* z1ReluDerivative = dRelu(z1);
+    Matrix* b1Adjustment = matrixHadamard(w2DotB2Adjustment, z1ReluDerivative);
+    matrixFree(w2DotB2Adjustment);
+    matrixFree(z1ReluDerivative);
+    Matrix* a0Transpose = matrixTranspose(input);
+    Matrix* w1Adjustment = matrixDot(b1Adjustment, a0Transpose);
+    matrixFree(a0Transpose);
+
+    matrixFree(z1);
+    matrixFree(z1Biased);
+    matrixFree(a1);
+    matrixFree(z2);
+    matrixFree(z2Biased);
+    matrixFree(a2);
 
     // PLACEHOLDER SO I CAN TEST COMPILE
     return w1;
