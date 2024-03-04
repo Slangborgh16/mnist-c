@@ -21,6 +21,7 @@ int matrixCheckDimensions(Matrix* matrix1, Matrix* matrix2);
 
 Matrix* matrixAdd(Matrix* matrix1, Matrix* matrix2);
 Matrix* matrixSubtract(Matrix* matrix1, Matrix* matrix2);
+Matrix* matrixScalarProduct(Matrix* matrix, double factor);
 Matrix* matrixDot(Matrix* matrix1, Matrix* matrix2);
 Matrix* matrixHadamard(Matrix* matrix1, Matrix* matrix2);
 Matrix* matrixTranspose(Matrix* matrix);

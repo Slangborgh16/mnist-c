@@ -122,6 +122,21 @@ Matrix* matrixSubtract(Matrix* matrix1, Matrix* matrix2) {
 }
 
 
+Matrix* matrixScalarProduct(Matrix* matrix, double factor) {
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    Matrix* product = matrixCreate(rows, cols);
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            product->values[i][j] = factor * matrix->values[i][j];
+    }
+
+    return product;
+}
+
+
 Matrix* matrixDot(Matrix* matrix1, Matrix* matrix2) {
     if (matrix1->cols != matrix2->rows) {
         printf("Matrix dot product dimension error: %dx%d • %dx%d\n", \
