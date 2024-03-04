@@ -147,8 +147,43 @@ Matrix* forwardprop(Network* nnet, Matrix* input) {
 }
 
 
-Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
-    // I don't like how these lines are straight from the forwardprop function
+void updateNetwork(Network* nnet, Matrix* dW1, Matrix* dW2, \
+        Matrix* dB1, Matrix* dB2, double learningRate) {
+    Matrix* product = NULL;
+    Matrix* updatedParam = NULL;
+
+    product = matrixScalarProduct(dW1, learningRate);
+    updatedParam = matrixSubtract(nnet->w1, product);
+    matrixFree(product);
+    matrixFree(nnet->w1);
+    nnet->w1 = updatedParam;
+    matrixFree(updatedParam);
+
+    product = matrixScalarProduct(dW2, learningRate);
+    updatedParam = matrixSubtract(nnet->w2, product);
+    matrixFree(product);
+    matrixFree(nnet->w2);
+    nnet->w2 = updatedParam;
+    matrixFree(updatedParam);
+    
+    product = matrixScalarProduct(dB1, learningRate);
+    updatedParam = matrixSubtract(nnet->b1, product);
+    matrixFree(product);
+    matrixFree(nnet->b1);
+    nnet->b1 = updatedParam;
+    matrixFree(updatedParam);
+    
+    product = matrixScalarProduct(dB2, learningRate);
+    updatedParam = matrixSubtract(nnet->b2, product);
+    matrixFree(product);
+    matrixFree(nnet->b2);
+    nnet->b2 = updatedParam;
+    matrixFree(updatedParam);
+}
+
+
+void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate) {
+    // I don't like how these lines are identical to the forwardprop function
     // Need to come up with a better solution
     Matrix* w1 = nnet->w1;
     Matrix* w2 = nnet->w2;
@@ -184,13 +219,16 @@ Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot) {
     Matrix* w1Adjustment = matrixDot(b1Adjustment, a0Transpose);
     matrixFree(a0Transpose);
 
+    updateNetwork(nnet, w1Adjustment, w2Adjustment, b1Adjustment, b2Adjustment, learningRate);
+
     matrixFree(z1);
     matrixFree(z1Biased);
     matrixFree(a1);
     matrixFree(z2);
     matrixFree(z2Biased);
     matrixFree(a2);
-
-    // PLACEHOLDER SO I CAN TEST COMPILE
-    return w1;
+    matrixFree(w1Adjustment);
+    matrixFree(w2Adjustment);
+    matrixFree(b1Adjustment);
+    matrixFree(b2Adjustment);
 }

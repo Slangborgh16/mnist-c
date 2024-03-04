@@ -26,6 +26,8 @@ Matrix* dSoftmax(Matrix* matrix);
 double crossEntropy(Matrix* predictions, Matrix* labels);
 
 Matrix* forwardprop(Network* nnet, Matrix* input);
-Matrix* backprop(Network* nnet, Matrix* input, Matrix* onehot);
+void updateNetwork(Network* nnet, Matrix* dW1, Matrix* dW2, \
+        Matrix* dB1, Matrix* dB2, double learningRate);
+void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate);
 
 #endif
