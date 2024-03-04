@@ -46,6 +46,21 @@ void matrixFill(Matrix* matrix, double val) {
 }
 
 
+Matrix* matrixCopy(Matrix* matrix) {
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    Matrix* newMatrix = matrixCreate(rows, cols);
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j ++)
+            newMatrix->values[i][j] = matrix->values[i][j];
+    }
+
+    return newMatrix;
+}
+
+
 void matrixPrint(Matrix* matrix) {
     int rows = matrix->rows;
     int cols = matrix->cols;
