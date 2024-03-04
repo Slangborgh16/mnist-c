@@ -63,7 +63,7 @@ int getLabel(Dataset* dataset, const int index) {
 
 Matrix* oneHotEncode(Dataset* dataset, const int index) {
     int label = getLabel(dataset, index);    
-    int classes = 10;
+    const int classes = 10;
     Matrix* onehot = matrixCreate(classes, 1);
 
     for (int i = 0; i < classes; i++)
@@ -71,6 +71,23 @@ Matrix* oneHotEncode(Dataset* dataset, const int index) {
 
     onehot->values[label][0] = 1.0;
 
+    return onehot;
+}
+
+
+Matrix* oneHotEncodeImages(Dataset* dataset, int* indices, const int numIndices) {
+    const int classes = 10;
+    Matrix* onehot = matrixCreate(classes, numIndices);
+
+    for (int j = 0; j < numIndices; j++) {
+        int label = getLabel(dataset, j);    
+
+        for (int i = 0; i < classes; i++)
+            onehot->values[i][j] = 0.0;
+
+        onehot->values[label][j] = 1.0;
+    }
+    
     return onehot;
 }
 
@@ -89,6 +106,29 @@ Matrix* imgToMatrix(Dataset* dataset, const int index) {
 
     for (int i = 0; i < numPixels; i++)
         img->values[i][0] = (double)pixels[i] / 255;
+
+    return img;
+}
+
+
+Matrix* imagesToMatrix(Dataset* dataset, int* indices, const int numIndices) {
+    int numPixels = dataset->imageRows * dataset->imageCols;
+    uint8_t pixels = NULL;
+
+    Matrix* img = matrixCreate(numPixels, numIndices);
+
+    for (int j = 0; j < numIndices; j++) {
+        int index = indices[j];
+        if (index >= dataset->numImages || index < 0) {
+            printf("Image index %d out of range. Max index: %d\n", index, dataset->numImages - 1);
+            exit(EXIT_FAILURE);
+        }
+
+        pixels = dataset->pixelData + sizeof(uint8_t) * numPixels * index;
+
+        for (int i = 0; i < numPixels; i++)
+            img->values[i][j] = (double)pixels[i] / 255;
+    }
 
     return img;
 }
