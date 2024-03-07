@@ -75,7 +75,7 @@ Matrix* oneHotEncode(Dataset* dataset, const int index) {
 }
 
 
-Matrix* oneHotEncodeImages(Dataset* dataset, int* indices, const int numIndices) {
+Matrix* oneHotEncodeLabels(Dataset* dataset, int* indices, const int numIndices) {
     const int classes = 10;
     Matrix* onehot = matrixCreate(classes, numIndices);
 
@@ -113,7 +113,7 @@ Matrix* imgToMatrix(Dataset* dataset, const int index) {
 
 Matrix* imagesToMatrix(Dataset* dataset, int* indices, const int numIndices) {
     int numPixels = dataset->imageRows * dataset->imageCols;
-    uint8_t pixels = NULL;
+    uint8_t* pixels = NULL;
 
     Matrix* img = matrixCreate(numPixels, numIndices);
 

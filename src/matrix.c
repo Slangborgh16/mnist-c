@@ -198,3 +198,20 @@ Matrix* matrixTranspose(Matrix* matrix) {
 
     return transpose;
 }
+
+
+Matrix* matrixRowAvg(Matrix* matrix) {
+    int rows = matrix->rows;
+    int cols = matrix->cols;
+
+    Matrix* avg = matrixCreate(rows, 1);
+
+    for (int i = 0; i < rows; i++) {
+        double sum = 0.0;
+        for (int j = 0; j < cols; j++)
+            sum += matrix->values[i][j];
+        avg->values[i][0] = sum / (double)cols;
+    }
+
+    return avg;
+}

@@ -22,7 +22,7 @@ typedef struct Dataset {
 void loadDataset(Dataset* dataset, const char* labelsPath, const char* imagesPath);
 int getLabel(Dataset* dataset, const int index);
 Matrix* oneHotEncode(Dataset* dataset, const int index);
-Matrix* oneHotEncodeImages(Dataset* dataset, int* indices, const int numIndices);
+Matrix* oneHotEncodeLabels(Dataset* dataset, int* indices, const int numIndices);
 Matrix* imgToMatrix(Dataset* dataset, const int index);
 Matrix* imagesToMatrix(Dataset* dataset, int* indices, const int numIndices);
 void printImage(Dataset* dataset, const int index);

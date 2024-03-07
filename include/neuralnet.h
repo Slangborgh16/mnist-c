@@ -23,11 +23,12 @@ Matrix* relu(Matrix* matrix);
 Matrix* dRelu(Matrix* matrix);
 Matrix* softmax(Matrix* matrix);
 Matrix* dSoftmax(Matrix* matrix);
+Matrix* biasAdd(Matrix* z, Matrix* bias);
 double crossEntropy(Matrix* predictions, Matrix* labels);
 
 Matrix* forwardprop(Network* nnet, Matrix* input);
 void updateNetwork(Network* nnet, Matrix* dW1, Matrix* dW2, \
         Matrix* dB1, Matrix* dB2, double learningRate);
-void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate);
+void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate, int batchSize);
 
 #endif

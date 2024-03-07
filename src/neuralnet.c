@@ -66,10 +66,14 @@ Matrix* softmax(Matrix* matrix) {
     Matrix* softmaxMatrix = matrixCreate(rows, cols);
 
     for (int j = 0; j < cols; j++) {
+        double max = 0.0;
         double sum = 0.0;
 
+        for (int i = 0; i < rows; i++)
+            max = fmax(matrix->values[i][j], max);
+
         for (int i = 0; i < rows; i++) {
-            double val = exp(matrix->values[i][j]);
+            double val = exp(matrix->values[i][j] - max);
             sum += val;
             softmaxMatrix->values[i][j] = val;
         }
@@ -93,6 +97,21 @@ Matrix* dSoftmax(Matrix* matrix) {
     matrixFree(difference);
 
     return derivative;
+}
+
+
+Matrix* biasAdd(Matrix* z, Matrix* bias) {
+    int rows = z->rows;
+    int cols = z->cols;
+
+    Matrix* sum = matrixCreate(rows, cols);
+    
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++)
+            sum->values[i][j] = z->values[i][j] + bias->values[i][0];
+    }
+
+    return sum;
 }
 
 
@@ -131,10 +150,10 @@ Matrix* forwardprop(Network* nnet, Matrix* input) {
     Matrix* b2 = nnet->b2;
 
     Matrix* z1 = matrixDot(w1, input);
-    Matrix* z1Biased = matrixAdd(z1, b1);
+    Matrix* z1Biased = biasAdd(z1, b1);
     Matrix* a1 = relu(z1Biased);
     Matrix* z2 = matrixDot(w2, a1);
-    Matrix* z2Biased = matrixAdd(z2, b2);
+    Matrix* z2Biased = biasAdd(z2, b2);
     Matrix* a2 = softmax(z2Biased);
 
     matrixFree(z1);
@@ -157,32 +176,28 @@ void updateNetwork(Network* nnet, Matrix* dW1, Matrix* dW2, \
     matrixFree(product);
     matrixFree(nnet->w1);
     nnet->w1 = updatedParam;
-    matrixFree(updatedParam);
 
     product = matrixScalarProduct(dW2, learningRate);
     updatedParam = matrixSubtract(nnet->w2, product);
     matrixFree(product);
     matrixFree(nnet->w2);
     nnet->w2 = updatedParam;
-    matrixFree(updatedParam);
     
     product = matrixScalarProduct(dB1, learningRate);
     updatedParam = matrixSubtract(nnet->b1, product);
     matrixFree(product);
     matrixFree(nnet->b1);
     nnet->b1 = updatedParam;
-    matrixFree(updatedParam);
     
     product = matrixScalarProduct(dB2, learningRate);
     updatedParam = matrixSubtract(nnet->b2, product);
     matrixFree(product);
     matrixFree(nnet->b2);
     nnet->b2 = updatedParam;
-    matrixFree(updatedParam);
 }
 
 
-void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate) {
+void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate, int batchSize) {
     // I don't like how these lines are identical to the forwardprop function
     // Need to come up with a better solution
     Matrix* w1 = nnet->w1;
@@ -192,34 +207,31 @@ void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate)
     Matrix* b2 = nnet->b2;
 
     Matrix* z1 = matrixDot(w1, input);
-    Matrix* z1Biased = matrixAdd(z1, b1);
+    Matrix* z1Biased = biasAdd(z1, b1);
     Matrix* a1 = relu(z1Biased);
     Matrix* z2 = matrixDot(w2, a1);
-    Matrix* z2Biased = matrixAdd(z2, b2);
+    Matrix* z2Biased = biasAdd(z2, b2);
     Matrix* a2 = softmax(z2Biased);
 
     // Last layer adjustments
-    // Bias adjustment: a2 - t -- Where t is one-hot encoded label
-    // Weight adjustment: (a2 - t) dot a1^T -- At least I think...
-    Matrix* b2Adjustment = matrixSubtract(a2, onehot);
-    Matrix* a1Transpose = matrixTranspose(a1);
-    Matrix* w2Adjustment = matrixDot(b2Adjustment, a1Transpose);
-    matrixFree(a1Transpose);
+    Matrix* dZ2 = matrixSubtract(a2, onehot);
+    Matrix* a1T = matrixTranspose(a1);
+    Matrix* dZ2DotA1T = matrixDot(dZ2, a1T);
+    Matrix* dW2 = matrixScalarProduct(dZ2DotA1T, 1.0 / (double)batchSize);
+    Matrix* dB2 = matrixRowAvg(dZ2);
 
     // First layer adjustments
-    // Bias adjustment: (w2^T dot b2Adjustment) hadamard dRelu(z1)
-    // Weight adjustment: b1Adjustment dot a0^T
-    Matrix* w2Transpose = matrixTranspose(w2);
-    Matrix* w2DotB2Adjustment = matrixDot(w2Transpose, b2Adjustment);
-    Matrix* z1ReluDerivative = dRelu(z1);
-    Matrix* b1Adjustment = matrixHadamard(w2DotB2Adjustment, z1ReluDerivative);
-    matrixFree(w2DotB2Adjustment);
-    matrixFree(z1ReluDerivative);
-    Matrix* a0Transpose = matrixTranspose(input);
-    Matrix* w1Adjustment = matrixDot(b1Adjustment, a0Transpose);
-    matrixFree(a0Transpose);
+    Matrix* w2T = matrixTranspose(w2);
+    Matrix* w2TDotdZ2 = matrixDot(w2T, dZ2);
+    Matrix* dReluZ1 = dRelu(z1);
+    Matrix* dZ1 = matrixHadamard(w2TDotdZ2, dReluZ1);
+    Matrix* a0T = matrixTranspose(input);
+    Matrix* dZ1DotA0T = matrixDot(dZ1, a0T);
+    Matrix* dW1 = matrixScalarProduct(dZ1DotA0T, 1.0 / (double)batchSize);
+    Matrix* dB1 = matrixRowAvg(dZ1);
 
-    updateNetwork(nnet, w1Adjustment, w2Adjustment, b1Adjustment, b2Adjustment, learningRate);
+    updateNetwork(nnet, dW1, dW2, dB1, dB2, learningRate);
+    // matrixPrint(dW1);
 
     matrixFree(z1);
     matrixFree(z1Biased);
@@ -227,8 +239,19 @@ void backprop(Network* nnet, Matrix* input, Matrix* onehot, double learningRate)
     matrixFree(z2);
     matrixFree(z2Biased);
     matrixFree(a2);
-    matrixFree(w1Adjustment);
-    matrixFree(w2Adjustment);
-    matrixFree(b1Adjustment);
-    matrixFree(b2Adjustment);
+
+    matrixFree(dZ2);
+    matrixFree(a1T);
+    matrixFree(dZ2DotA1T);
+    matrixFree(dW2);
+    matrixFree(dB2);
+
+    matrixFree(w2T);
+    matrixFree(w2TDotdZ2);
+    matrixFree(dReluZ1);
+    matrixFree(dZ1);
+    matrixFree(a0T);
+    matrixFree(dZ1DotA0T);
+    matrixFree(dW1);
+    matrixFree(dB1);
 }
